@@ -1,12 +1,8 @@
-// BMP08 with Arduino
- 
-// DANGER: The BMP08 accepts 1.8 to 3.6 Volts – so no chance to connect it directly to 5 Volts.
- 
-// Connect VCC to VCC and GND to GND, SCL goes to analogue pin 5, SDA to analogue pin4.
-// Notice! Sparkfun breakoutboard contains already 4.7K pull ups,
-// If not using pre-built pull-ups:
-// --> Add some pull up resistors (1K to 20K, most often something like 4.7K) between SDA, SCL and VCC finishes the setup.
- 
+/*
+
+***** CODE RIPPED FROM http://sensorapp.net/?p=278 ******
+
+*/
 // References: http://interactive-matter.org/2009/12/arduino-barometric-pressure-sensor-bmp085/ and http://news.jeelabs.org/2009/02/1/hooking-up-a-bmp085-sensor/
 // Specification: http://www.bosch-sensortec.com/content/language1/downloads/BST-BMP085-DS000-05.pdf
 // SparkFun breakout board: http://www.sparkfun.com/commerce/product_info.php?products_id=9694
