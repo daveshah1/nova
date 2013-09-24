@@ -95,40 +95,40 @@ unsigned int bmp085_read_ut() {
 }
  
 void bmp085_get_cal_data() {
-  Serial.println("Reading Calibration Data");
+  //Serial.println("Reading Calibration Data");
   ac1 = read_int_register(0xAA);
-  Serial.print("AC1: ");
-  Serial.println(ac1,DEC);
+  //Serial.print("AC1: ");
+  //Serial.println(ac1,DEC);
   ac2 = read_int_register(0xAC);
-  Serial.print("AC2: ");
-  Serial.println(ac2,DEC);
+  //Serial.print("AC2: ");
+  //Serial.println(ac2,DEC);
   ac3 = read_int_register(0xAE);
-  Serial.print("AC3: ");
-  Serial.println(ac3,DEC);
+  //Serial.print("AC3: ");
+  //Serial.println(ac3,DEC);
   ac4 = read_int_register(0xB0);
-  Serial.print("AC4: ");
-  Serial.println(ac4,DEC);
+  //Serial.print("AC4: ");
+  //Serial.println(ac4,DEC);
   ac5 = read_int_register(0xB2);
-  Serial.print("AC5: ");
-  Serial.println(ac5,DEC);
+  //Serial.print("AC5: ");
+  //Serial.println(ac5,DEC);
   ac6 = read_int_register(0xB4);
-  Serial.print("AC6: ");
-  Serial.println(ac6,DEC);
+  //Serial.print("AC6: ");
+  //Serial.println(ac6,DEC);
   b1 = read_int_register(0xB6);
-  Serial.print("B1: ");
-  Serial.println(b1,DEC);
+  //Serial.print("B1: ");
+  //Serial.println(b1,DEC);
   b2 = read_int_register(0xB8);
-  Serial.print("B2: ");
-  Serial.println(b1,DEC);
+  //Serial.print("B2: ");
+  //Serial.println(b1,DEC);
   mb = read_int_register(0xBA);
-  Serial.print("MB: ");
-  Serial.println(mb,DEC);
+  //Serial.print("MB: ");
+  //Serial.println(mb,DEC);
   mc = read_int_register(0xBC);
-  Serial.print("MC: ");
-  Serial.println(mc,DEC);
+  //Serial.print("MC: ");
+  //Serial.println(mc,DEC);
   md = read_int_register(0xBE);
-  Serial.print("MD: ");
-  Serial.println(md,DEC);
+  //Serial.print("MD: ");
+  //Serial.println(md,DEC);
 }
  
 long bmp085_read_up() {
