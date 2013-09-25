@@ -50,26 +50,7 @@ public class Main {
 		frmNovaControlPanel.setBounds(100, 100, 1280, 800);
 		frmNovaControlPanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JPanel topPanel = new JPanel();
-		topPanel.setLayout( new BorderLayout() );
-		frmNovaControlPanel.getContentPane().add( topPanel );		
-		
-		createPage1();
-		createPage2();
-		
-		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		frmNovaControlPanel.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-		
-		tabbedPane = new JTabbedPane();
-		tabbedPane.addTab( "Main", panel1 );
-		tabbedPane.addTab( "Debug", panel2 );
-		topPanel.add( tabbedPane, BorderLayout.CENTER );		
-	}
-	
-	public void createPage1() {
-	}
-	
-	public void createPage2(){
 	}
 }

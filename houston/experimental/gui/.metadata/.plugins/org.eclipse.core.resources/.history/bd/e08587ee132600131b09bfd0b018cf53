@@ -11,8 +11,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
-import javax.swing.JTabbedPane;
-import java.awt.BorderLayout;
 
 public class Main {
 
@@ -50,26 +48,16 @@ public class Main {
 		frmNovaControlPanel.setBounds(100, 100, 1280, 800);
 		frmNovaControlPanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JPanel topPanel = new JPanel();
-		topPanel.setLayout( new BorderLayout() );
-		frmNovaControlPanel.getContentPane().add( topPanel );		
+		JMenuBar menuBar = new JMenuBar();
+		frmNovaControlPanel.setJMenuBar(menuBar);
 		
-		createPage1();
-		createPage2();
-		
-		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		frmNovaControlPanel.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-		
-		tabbedPane = new JTabbedPane();
-		tabbedPane.addTab( "Main", panel1 );
-		tabbedPane.addTab( "Debug", panel2 );
-		topPanel.add( tabbedPane, BorderLayout.CENTER );		
-	}
-	
-	public void createPage1() {
-	}
-	
-	public void createPage2(){
+		JMenuItem mntmExit = new JMenuItem("Exit");
+		mntmExit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				System.exit(0);
+			}
+		});
+		menuBar.add(mntmExit);
 	}
 }
