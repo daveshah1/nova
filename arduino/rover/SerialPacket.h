@@ -1,6 +1,7 @@
 #ifndef SerialPacket_h
 #define SerialPacket_h
-
+#include "stdlib.h"
+#include "string.h"
 #include "Arduino.h"
 class SerialPacket
 {
@@ -11,6 +12,7 @@ class SerialPacket
 		char *getPayload();
 		void sendReply(char *status,char *payload);		
 	private:
-		char *currentPacket;
+		char currentPacket[64];
+		bool packetAvailable;
 };
 #endif

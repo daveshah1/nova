@@ -2,7 +2,9 @@
 #include "SerialPacket.h"
 
 SerialPacket::SerialPacket(int baud) {
+	packetAvailable = false;
 	Serial.begin(baud);
+	
 };
 
 int SerialPacket::isPacketAvailable() {
@@ -21,6 +23,7 @@ int SerialPacket::isPacketAvailable() {
 			};
 		} else {
 		if (cByte == '\n') { //Check for terminating character
+			packetAvailable = true;
 			strncpy(incomingPacket,currentPacket,64);
 			return 1; //If so, finish up and return that a packet was received
 		} else  {
@@ -31,4 +34,13 @@ int SerialPacket::isPacketAvailable() {
 		delayMicroseconds(2500); //Wait for the next byte, just to prevent errors occuring in some situations.
 	};
 	return 0;
+};
+
+char* SerialPacket::getCommand() {
+	if(packetAvailable) {
+		char *cmd = strtok(str," ");
+		return cmd;
+	} else {
+		return NULL;
+	};
 };
