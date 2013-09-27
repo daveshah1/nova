@@ -1,6 +1,9 @@
+#include "Wire.h"
+#include "Arduino.h"
+
 #ifndef BMP085_h
 #define BMP085_h
-#include "Arduino.h"
+
 class BMP085
 {
 	public:

@@ -8,10 +8,10 @@ SerialPacket::SerialPacket(int baud) {
 };
 
 int SerialPacket::isPacketAvailable() {
-	char[64] incomingPacket = {0};
+	char incomingPacket[64] = {0};
 	int currentLocation = 0;
 	int startCounter = 0;
-	char[3] startBytes = {'H','I',' '}; //Set of characters signalling start of transmission
+	char startBytes[] = {'H','I',' '}; //Set of characters signalling start of transmission
 	char cByte;
 	while(Serial.available() > 0) {
 		cByte = Serial.read();
@@ -38,8 +38,8 @@ int SerialPacket::isPacketAvailable() {
 
 char *SerialPacket::getCommand() {
 	if(packetAvailable) {
-		char cmd[2];
-		strncpy(cmd,incomingPacket,2);//First two bytes are command		
+		char *cmd = (char*)malloc(2);
+		strncpy(cmd,currentPacket,2);//First two bytes are command		
 		return cmd;
 	} else {
 		return NULL;
@@ -48,9 +48,9 @@ char *SerialPacket::getCommand() {
 
 char *SerialPacket::getPayload() {
 	if(packetAvailable) {
-		char cmd[60];
-		strncpy(cmd,&(incomingPacket[3]),64);//Everything from third byte onwards is the payload		
-		return cmd;
+		char *payload = (char*)malloc(64);
+		strncpy(payload,&(currentPacket[3]),64);//Everything from third byte onwards is the payload		
+		return payload;
 	} else {
 		return NULL;
 	};
@@ -59,6 +59,6 @@ char *SerialPacket::getPayload() {
 void SerialPacket::sendReply(char *status,char *payload) {
 	char replyPacket[65];
 	snprintf(replyPacket,64,"RP %s %s \n",status,payload);
-	replyPacket[64] = NULL; //Just in case, ensure a valid terminator is set.
+	replyPacket[64] = 0x00; //Just in case, ensure a valid terminator is set.
 	Serial.write(replyPacket);
 };

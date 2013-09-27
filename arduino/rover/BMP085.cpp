@@ -38,7 +38,7 @@ int BMP085::read_int_register(unsigned char r)
   return (((int)msb<<8) | ((int)lsb));
 }
 
-void getTP(int *temperature,int *pressure) {
+void BMP085::getTP(int *temperature,int *pressure) {
   int ut= readUT();
   long up = readUP();
   long x1, x2, x3, b3, b5, b6, p;
@@ -101,7 +101,7 @@ long BMP085::readUP() {
   return (((long)msb<<16) | ((long)lsb<<8) | ((long)xlsb)) >>(8-oversampling_setting);
 }
 
-unsigned int BMP085:readUT() {
+unsigned int BMP085::readUT() {
   write_register(0xf4,0x2e);
   delay(5); //longer than 4.5 ms
   return read_int_register(0xf6);
