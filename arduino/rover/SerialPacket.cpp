@@ -39,7 +39,7 @@ int SerialPacket::isPacketAvailable() {
 char *SerialPacket::getCommand() {
 	if(packetAvailable) {
 		char cmd[2];
-		strncpy(cmd,incomingPacket,2);		
+		strncpy(cmd,incomingPacket,2);//First two bytes are command		
 		return cmd;
 	} else {
 		return NULL;
@@ -49,7 +49,7 @@ char *SerialPacket::getCommand() {
 char *SerialPacket::getPayload() {
 	if(packetAvailable) {
 		char cmd[60];
-		strncpy(cmd,&(incomingPacket[3]),64);		
+		strncpy(cmd,&(incomingPacket[3]),64);//Everything from third byte onwards is the payload		
 		return cmd;
 	} else {
 		return NULL;
@@ -57,7 +57,8 @@ char *SerialPacket::getPayload() {
 };
 
 void SerialPacket::sendReply(char *status,char *payload) {
-	char replyPacket[64];
+	char replyPacket[65];
 	snprintf(replyPacket,64,"RP %s %s \n",status,payload);
+	replyPacket[64] = NULL; //Just in case, ensure a valid terminator is set.
 	Serial.write(replyPacket);
 };
