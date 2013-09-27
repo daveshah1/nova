@@ -55,3 +55,9 @@ char *SerialPacket::getPayload() {
 		return NULL;
 	};
 };
+
+void SerialPacket::sendReply(char *status,char *payload) {
+	char replyPacket[64];
+	snprintf(replyPacket,64,"RP %s %s \n",status,payload);
+	Serial.write(replyPacket);
+};
