@@ -24,7 +24,7 @@ int SerialPacket::isPacketAvailable() {
 		} else {
 		if (cByte == '\n') { //Check for terminating character
 			packetAvailable = true;
-			strncpy(incomingPacket,currentPacket,64);
+			strncpy(currentPacket,incomingPacket,64);
 			return 1; //If so, finish up and return that a packet was received
 		} else  {
 			incomingPacket[currentLocation] = cByte;
@@ -36,9 +36,20 @@ int SerialPacket::isPacketAvailable() {
 	return 0;
 };
 
-char* SerialPacket::getCommand() {
+char *SerialPacket::getCommand() {
 	if(packetAvailable) {
-		char *cmd = strtok(str," ");
+		char cmd[2];
+		strncpy(cmd,incomingPacket,2);		
+		return cmd;
+	} else {
+		return NULL;
+	};
+};
+
+char *SerialPacket::getPayload() {
+	if(packetAvailable) {
+		char cmd[60];
+		strncpy(cmd,&(incomingPacket[3]),64);		
 		return cmd;
 	} else {
 		return NULL;
