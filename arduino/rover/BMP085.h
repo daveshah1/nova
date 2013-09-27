@@ -4,12 +4,18 @@
 class BMP085
 {
 	public:
-		BMP085(int address);
-        void getTP(int &temperature,int &pressure);	
+		BMP085(unsigned char address);
+        void getTP(int *temperature,int *pressure);	
 	private:
+		void getCalData();
+		unsigned int readUT();
+		long readUP();
+		void write_register(unsigned char r, unsigned char v);
+		char read_register(unsigned char r);
+		int read_int_register(unsigned char r);
 		const unsigned char oversampling_setting = 3;
 		const unsigned char pressure_waittime[4] = { 5, 8, 14, 26 };
-		int I2C_ADDRESS;
+		unsigned char I2C_ADDRESS;
 		int ac1;
 		int ac2;
 		int ac3;
