@@ -1,131 +1,196 @@
 #include "BMP085.h"
 
-void BMP085::begin(unsigned char address) {
-	  I2C_ADDRESS = address;
-	  getCalData();
+void BMP085::begin(){
+  bmp085Calibration();
 }
 
-void BMP085::getCalData() {
-  ac1 = read_int_register(0xAA);
-  ac2 = read_int_register(0xAC);
-  ac3 = read_int_register(0xAE);
-  ac4 = read_int_register(0xB0);
-  ac5 = read_int_register(0xB2);
-  ac6 = read_int_register(0xB4);
-  b1 = read_int_register(0xB6);
-  b2 = read_int_register(0xB8);
-  mb = read_int_register(0xBA);
-  mc = read_int_register(0xBC);
-  md = read_int_register(0xBE);
+void BMP085::getTP(float &t, float &p)
+{
+  t = bmp085GetTemperature(bmp085ReadUT()); //MUST be called first
+  p = bmp085GetPressure(bmp085ReadUP());
+
 }
 
-int BMP085::read_int_register(unsigned char r)
+// Stores all of the bmp085's calibration values into global variables
+// Calibration values are required to calculate temp and pressure
+// This function should be called at the beginning of the program
+void BMP085::bmp085Calibration()
+{
+  ac1 = bmp085ReadInt(0xAA);
+  ac2 = bmp085ReadInt(0xAC);
+  ac3 = bmp085ReadInt(0xAE);
+  ac4 = bmp085ReadInt(0xB0);
+  ac5 = bmp085ReadInt(0xB2);
+  ac6 = bmp085ReadInt(0xB4);
+  b1 = bmp085ReadInt(0xB6);
+  b2 = bmp085ReadInt(0xB8);
+  mb = bmp085ReadInt(0xBA);
+  mc = bmp085ReadInt(0xBC);
+  md = bmp085ReadInt(0xBE);
+}
+
+// Calculate temperature in deg C
+float BMP085::bmp085GetTemperature(unsigned int ut){
+  long x1, x2;
+
+  x1 = (((long)ut - (long)ac6)*(long)ac5) >> 15;
+  x2 = ((long)mc << 11)/(x1 + md);
+  b5 = x1 + x2;
+
+  float temp = ((b5 + 8)>>4);
+  temp = temp /10;
+
+  return temp;
+}
+
+// Calculate pressure given up
+// calibration values must be known
+// b5 is also required so bmp085GetTemperature(...) must be called first.
+// Value returned will be pressure in units of Pa.
+long BMP085::bmp085GetPressure(unsigned long up){
+  long x1, x2, x3, b3, b6, p;
+  unsigned long b4, b7;
+
+  b6 = b5 - 4000;
+  // Calculate B3
+  x1 = (b2 * (b6 * b6)>>12)>>11;
+  x2 = (ac2 * b6)>>11;
+  x3 = x1 + x2;
+  b3 = (((((long)ac1)*4 + x3)<<OSS) + 2)>>2;
+
+  // Calculate B4
+  x1 = (ac3 * b6)>>13;
+  x2 = (b1 * ((b6 * b6)>>12))>>16;
+  x3 = ((x1 + x2) + 2)>>2;
+  b4 = (ac4 * (unsigned long)(x3 + 32768))>>15;
+
+  b7 = ((unsigned long)(up - b3) * (50000>>OSS));
+  if (b7 < 0x80000000)
+    p = (b7<<1)/b4;
+  else
+    p = (b7/b4)<<1;
+
+  x1 = (p>>8) * (p>>8);
+  x1 = (x1 * 3038)>>16;
+  x2 = (-7357 * p)>>16;
+  p += (x1 + x2 + 3791)>>4;
+
+  long temp = p;
+  return temp;
+}
+
+// Read 1 byte from the BMP085 at 'address'
+char BMP085::bmp085Read(unsigned char address)
+{
+  unsigned char data;
+
+  Wire.beginTransmission(BMP085_ADDRESS);
+  Wire.write(address);
+  Wire.endTransmission();
+
+  Wire.requestFrom(BMP085_ADDRESS, 1);
+  while(!Wire.available())
+    ;
+
+  return Wire.read();
+}
+
+// Read 2 bytes from the BMP085
+// First byte will be from 'address'
+// Second byte will be from 'address'+1
+int BMP085::bmp085ReadInt(unsigned char address)
 {
   unsigned char msb, lsb;
-  Wire.beginTransmission(I2C_ADDRESS);
-  Wire.write(r); // register to read
+
+  Wire.beginTransmission(BMP085_ADDRESS);
+  Wire.write(address);
   Wire.endTransmission();
- 
-  Wire.requestFrom(I2C_ADDRESS, 2); // read a byte
-  while(!Wire.available()) {
-    // waiting
-  }
+
+  Wire.requestFrom(BMP085_ADDRESS, 2);
+  while(Wire.available()<2)
+    ;
   msb = Wire.read();
-  while(!Wire.available()) {
-    // waiting
-  }
   lsb = Wire.read();
-  return (((int)msb<<8) | ((int)lsb));
+
+  return (int) msb<<8 | lsb;
 }
 
-void BMP085::getTP(int *temperature,int *pressure) {
-  int ut= readUT();
-  long up = readUP();
-  long x1, x2, x3, b3, b5, b6, p;
-  unsigned long b4, b7;
- 
-  //calculate the temperature
-  x1 = ((long)ut - ac6) * ac5 >> 15;
-  x2 = ((long) mc << 11) / (x1 + md);
-  b5 = x1 + x2;
-  *temperature = (b5 + 8) >> 4;
- 
-  //calculate the pressure
-  b6 = b5 - 4000;
-  x1 = (b2 * (b6 * b6 >> 12)) >> 11;
-  x2 = ac2 * b6 >> 11;
-  x3 = x1 + x2;
- 
-  //b3 = (((int32_t) ac1 * 4 + x3)<> 2;
- 
-  if (oversampling_setting == 3) b3 = ((int32_t) ac1 * 4 + x3 + 2) << 1;
-  if (oversampling_setting == 2) b3 = ((int32_t) ac1 * 4 + x3 + 2);
-  if (oversampling_setting == 1) b3 = ((int32_t) ac1 * 4 + x3 + 2) >> 1;
-  if (oversampling_setting == 0) b3 = ((int32_t) ac1 * 4 + x3 + 2) >> 2;
- 
-  x1 = ac3 * b6 >> 13;
-  x2 = (b1 * (b6 * b6 >> 12)) >> 16;
-  x3 = ((x1 + x2) + 2) >> 2;
-  b4 = (ac4 * (uint32_t) (x3 + 32768)) >> 15;
-  b7 = ((uint32_t) up - b3) * (50000 >> oversampling_setting);
-  p = b7 < 0x80000000 ? (b7 * 2) / b4 : (b7 / b4) * 2;
- 
-  x1 = (p >> 8) * (p >> 8);
-  x1 = (x1 * 3038) >> 16;
-  x2 = (-7357 * p) >> 16;
-  *pressure = p + ((x1 + x2 + 3791) >> 4);
-};
+// Read the uncompensated temperature value
+unsigned int BMP085::bmp085ReadUT(){
+  unsigned int ut;
 
-long BMP085::readUP() {
-  write_register(0xf4,0x34+(oversampling_setting<<6));
-  delay(pressure_waittime[oversampling_setting]);
- 
+  // Write 0x2E into Register 0xF4
+  // This requests a temperature reading
+  Wire.beginTransmission(BMP085_ADDRESS);
+  Wire.write(0xF4);
+  Wire.write(0x2E);
+  Wire.endTransmission();
+
+  // Wait at least 4.5ms
+  delay(5);
+
+  // Read two bytes from registers 0xF6 and 0xF7
+  ut = bmp085ReadInt(0xF6);
+  return ut;
+}
+
+// Read the uncompensated pressure value
+unsigned long BMP085::bmp085ReadUP(){
+
   unsigned char msb, lsb, xlsb;
-  Wire.beginTransmission(I2C_ADDRESS);
-  Wire.write(0xf6); // register to read
+  unsigned long up = 0;
+
+  // Write 0x34+(OSS<<6) into register 0xF4
+  // Request a pressure reading w/ oversampling setting
+  Wire.beginTransmission(BMP085_ADDRESS);
+  Wire.write(0xF4);
+  Wire.write(0x34 + (OSS<<6));
   Wire.endTransmission();
- 
-  Wire.requestFrom(I2C_ADDRESS, 3); // read a byte
-  while(!Wire.available()) {
-    // waiting
-  }
-  msb = Wire.read();
-  while(!Wire.available()) {
-    // waiting
-  }
-  lsb |= Wire.read();
-  while(!Wire.available()) {
-    // waiting
-  }
-  xlsb |= Wire.read();
-  return (((long)msb<<16) | ((long)lsb<<8) | ((long)xlsb)) >>(8-oversampling_setting);
+
+  // Wait for conversion, delay time dependent on OSS
+  delay(2 + (3<<OSS));
+
+  // Read register 0xF6 (MSB), 0xF7 (LSB), and 0xF8 (XLSB)
+  msb = bmp085Read(0xF6);
+  lsb = bmp085Read(0xF7);
+  xlsb = bmp085Read(0xF8);
+
+  up = (((unsigned long) msb << 16) | ((unsigned long) lsb << 8) | (unsigned long) xlsb) >> (8-OSS);
+
+  return up;
 }
 
-unsigned int BMP085::readUT() {
-  write_register(0xf4,0x2e);
-  delay(5); //longer than 4.5 ms
-  return read_int_register(0xf6);
+void BMP085::writeRegister(int deviceAddress, byte address, byte val) {
+  Wire.beginTransmission(deviceAddress); // start transmission to device 
+  Wire.write(address);       // send register address
+  Wire.write(val);         // send value to write
+  Wire.endTransmission();     // end transmission
 }
 
-void BMP085::write_register(unsigned char r, unsigned char v)
-{
-  Wire.beginTransmission(I2C_ADDRESS);
-  Wire.write(r);
-  Wire.write(v);
+int readRegister(int deviceAddress, byte address){
+
+  int v;
+  Wire.beginTransmission(deviceAddress);
+  Wire.write(address); // register to read
   Wire.endTransmission();
-}
- 
-char BMP085::read_register(unsigned char r)
-{
-  unsigned char v;
-  Wire.beginTransmission(I2C_ADDRESS);
-  Wire.write(r); // register to read
-  Wire.endTransmission();
- 
-  Wire.requestFrom(I2C_ADDRESS, 1); // read a byte
+
+  Wire.requestFrom(deviceAddress, 1); // read a byte
+
   while(!Wire.available()) {
     // waiting
   }
+
   v = Wire.read();
   return v;
+}
+
+float BMP085::calcAltitude(float pressure){
+
+  float A = pressure/101325;
+  float B = 1/5.25588;
+  float C = pow(A,B);
+  C = 1 - C;
+  C = C /0.0000225577;
+
+  return C;
 }

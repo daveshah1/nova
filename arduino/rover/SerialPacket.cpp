@@ -17,6 +17,8 @@ bool SerialPacket::isPacketAvailable() {
 	char cByte;
 	while(Serial.available() > 0) {
 		cByte = Serial.read();
+		Serial.print("Read byte: ");
+		Serial.println(cByte);
 		if (startCounter < 3) {
 			if (cByte == startBytes[startCounter]) {
 				startCounter++;
@@ -59,8 +61,9 @@ char *SerialPacket::getPayload() {
 };
 
 void SerialPacket::sendReply(char *status,char *payload) {
-	char replyPacket[65];
-	snprintf(replyPacket,64,"RP %s %s \n",status,payload);
-	replyPacket[64] = 0x00; //Just in case, ensure a valid terminator is set.
-	Serial.write(replyPacket);
+	Serial.print("RP ");
+	Serial.print(status);
+	Serial.print(" ");
+	Serial.print(payload);
+	Serial.println("\n");
 };
