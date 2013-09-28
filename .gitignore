@@ -219,3 +219,9 @@ pip-log.txt
 .lib/
 *.hex
 *.o
+
+##CODEBLOCKS##
+*.cbp
+cores/
+libraries/
+obj/
