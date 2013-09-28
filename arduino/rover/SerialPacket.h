@@ -5,14 +5,15 @@
 #include "Arduino.h"
 class SerialPacket
 {
-	public:
-		SerialPacket(int baud);
-		int isPacketAvailable();
-		char *getCommand();
-		char *getPayload();
-		void sendReply(char *status,char *payload);		
-	private:
-		char currentPacket[64];
-		bool packetAvailable;
+public:
+	SerialPacket();
+	bool isPacketAvailable();
+	char *getCommand();
+	char *getPayload();
+	void sendReply(char *status,char *payload);
+	void begin(int baud);
+private:
+	char currentPacket[64];
+	bool packetAvailable;
 };
 #endif

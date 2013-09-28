@@ -1,8 +1,8 @@
 #include "BMP085.h"
 
-BMP085::BMP085(unsigned char address) {
-  I2C_ADDRESS = address;
-  getCalData();
+void BMP085::begin(unsigned char address) {
+	  I2C_ADDRESS = address;
+	  getCalData();
 }
 
 void BMP085::getCalData() {

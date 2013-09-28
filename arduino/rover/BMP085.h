@@ -7,7 +7,7 @@
 class BMP085
 {
 	public:
-		BMP085(unsigned char address);
+		void begin(unsigned char address);
         void getTP(int *temperature,int *pressure);	
 	private:
 		void getCalData();

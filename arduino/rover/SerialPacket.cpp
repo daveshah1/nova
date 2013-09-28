@@ -1,13 +1,15 @@
 #include "Arduino.h"
 #include "SerialPacket.h"
 
-SerialPacket::SerialPacket(int baud) {
+SerialPacket::SerialPacket() {
 	packetAvailable = false;
-	Serial.begin(baud);
-	
 };
 
-int SerialPacket::isPacketAvailable() {
+void SerialPacket::begin(int baud) {
+	Serial.begin(baud);
+}
+
+bool SerialPacket::isPacketAvailable() {
 	char incomingPacket[64] = {0};
 	int currentLocation = 0;
 	int startCounter = 0;
@@ -22,18 +24,18 @@ int SerialPacket::isPacketAvailable() {
 				startCounter = 0;
 			};
 		} else {
-		if (cByte == '\n') { //Check for terminating character
-			packetAvailable = true;
-			strncpy(currentPacket,incomingPacket,64);
-			return 1; //If so, finish up and return that a packet was received
-		} else  {
-			incomingPacket[currentLocation] = cByte;
-			currentLocation++;
-		}
+			if (cByte == '\n') { //Check for terminating character
+				packetAvailable = true;
+				strncpy(currentPacket,incomingPacket,64);
+				return true; //If so, finish up and return that a packet was received
+			} else  {
+				incomingPacket[currentLocation] = cByte;
+				currentLocation++;
+			}
 		};
 		delayMicroseconds(2500); //Wait for the next byte, just to prevent errors occuring in some situations.
 	};
-	return 0;
+	return false;
 };
 
 char *SerialPacket::getCommand() {
