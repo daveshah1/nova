@@ -9,6 +9,11 @@ void setup() {
 	tp.begin();
 	pinMode(A2,OUTPUT);
 	pinMode(A1,OUTPUT);
+
+	pinMode(6,OUTPUT);
+	pinMode(9,OUTPUT);
+	pinMode(10,OUTPUT);
+	pinMode(11,OUTPUT);
 };
 
 void loop() {
@@ -22,13 +27,44 @@ void loop() {
 			//Serial.println(pressure);
 			snprintf(buffer,32,"%d %ld",(int)temp*10,(long)pressure);
 			sp.sendReply("OK",buffer);
+		} else if(strncmp(cmd,"MT",2)==0) {
+			char *params = sp.getPayload();
+			switch(params[0]) {
+			case 'F':
+				digitalWrite(6,HIGH);
+				digitalWrite(9,LOW);
+				break;
+			case 'S':
+				digitalWrite(6,LOW);
+				digitalWrite(9,LOW);
+				break;
+			case 'B':
+				digitalWrite(6,LOW);
+				digitalWrite(9,HIGH);
+				break;
+			}
+			switch(params[2]) {
+			case 'F':
+				digitalWrite(10,HIGH);
+				digitalWrite(11,LOW);
+				break;
+			case 'S':
+				digitalWrite(10,LOW);
+				digitalWrite(11,LOW);
+				break;
+			case 'B':
+				digitalWrite(10,LOW);
+				digitalWrite(11,HIGH);
+				break;
+			}
+			free(params);
 		}
 		free(cmd);
 	}
-	  digitalWrite(A1,LOW);
-	  digitalWrite(A2,HIGH);
-	  delay(150);
-	  digitalWrite(A1,HIGH);
-	  digitalWrite(A2,LOW);
-	  delay(150);
+	digitalWrite(A1,LOW);
+	digitalWrite(A2,HIGH);
+	delay(150);
+	digitalWrite(A1,HIGH);
+	digitalWrite(A2,LOW);
+	delay(150);
 };
