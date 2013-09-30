@@ -29,6 +29,7 @@ void loop() {
 			sp.sendReply("OK",buffer);
 		} else if(strncmp(cmd,"MT",2)==0) {
 			char *params = sp.getPayload();
+			bool commandOK = true;
 			switch(params[0]) {
 			case 'F':
 				digitalWrite(6,HIGH);
@@ -42,23 +43,38 @@ void loop() {
 				digitalWrite(6,LOW);
 				digitalWrite(9,HIGH);
 				break;
-			}
-			switch(params[2]) {
-			case 'F':
-				digitalWrite(10,HIGH);
-				digitalWrite(11,LOW);
-				break;
-			case 'S':
-				digitalWrite(10,LOW);
-				digitalWrite(11,LOW);
-				break;
-			case 'B':
-				digitalWrite(10,LOW);
-				digitalWrite(11,HIGH);
+			default:
+				commandOK = false;
 				break;
 			}
+			if(commandOK) {
+				switch(params[2]) {
+				case 'F':
+					digitalWrite(10,HIGH);
+					digitalWrite(11,LOW);
+					break;
+				case 'S':
+					digitalWrite(10,LOW);
+					digitalWrite(11,LOW);
+					break;
+				case 'B':
+					digitalWrite(10,LOW);
+					digitalWrite(11,HIGH);
+					break;
+				default:
+					commandOK = false;
+					break;
+				}
+			}
+			if(commandOK) {
+			sp.sendReply("OK","");
+			} else {
+			sp.sendReply("PE","");
+			};
 			free(params);
-		}
+		} else {
+			sp.sendReply("CE","");
+		};
 		free(cmd);
 	}
 	digitalWrite(A1,LOW);
