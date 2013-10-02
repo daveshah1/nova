@@ -9,7 +9,6 @@ import javax.swing.ImageIcon;
  * https://developers.google.com/maps/documentation/staticmaps/?csw=1
  * 
  * Usage: ImageIcon = google(String location, Boolean WantMarkers?, String OKSureMarkers, Boolean WantPaths?, String OKSurePaths, Int ZoomLevel, String TypeOfMap);
- * Don't know what I'm talking about - read the link you dipshit
  * Null the strings if you don't want anything else
  * 
  * Add variables, etc and customise mapURL to suit our needs.
