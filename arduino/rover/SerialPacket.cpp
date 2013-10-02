@@ -5,10 +5,18 @@ SerialPacket::SerialPacket() {
 	packetAvailable = false;
 };
 
+/*
+Initialises the serial port.
+*/
 void SerialPacket::begin(int baud) {
 	Serial.begin(baud);
 }
 
+/*
+Run regularly to check for incoming packets.
+Returns false if no packet available.
+Returns true if a packet was received.
+*/
 bool SerialPacket::isPacketAvailable() {
 	char incomingPacket[64] = {0};
 	int currentLocation = 0;
@@ -40,6 +48,11 @@ bool SerialPacket::isPacketAvailable() {
 	return false;
 };
 
+/*
+Returns the command part of the recieved packet.
+
+WARNING: run free() on the returned string when you are finished.
+*/
 char *SerialPacket::getCommand() {
 	if(packetAvailable) {
 		char *cmd = (char*)malloc(2);
@@ -50,6 +63,11 @@ char *SerialPacket::getCommand() {
 	};
 };
 
+/*
+Returns the payload part of the recieved packet.
+
+WARNING: run free() on the returned string when you are finished.
+*/
 char *SerialPacket::getPayload() {
 	if(packetAvailable) {
 		char *payload = (char*)malloc(64);
@@ -60,6 +78,11 @@ char *SerialPacket::getPayload() {
 	};
 };
 
+/*
+Sends a reply to the master.
+status: string containing 2-letter status code
+payload: string containing the payload
+*/
 void SerialPacket::sendReply(char *status,char *payload) {
 	Serial.print("RP ");
 	Serial.print(status);

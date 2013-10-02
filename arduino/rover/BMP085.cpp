@@ -1,9 +1,14 @@
 #include "BMP085.h"
 
+//Loads calibration data. May contain additional startup code in the future.
 void BMP085::begin(){
   bmp085Calibration();
 }
 
+/*Reads temperature and pressure
+t: variable to store temperature (degrees Celsius) in
+p: variable to store pressure in
+*/
 void BMP085::getTP(float &t, float &p)
 {
   t = bmp085GetTemperature(bmp085ReadUT()); //MUST be called first
@@ -160,6 +165,7 @@ unsigned long BMP085::bmp085ReadUP(){
   return up;
 }
 
+//Writes to a BMP085 register.
 void BMP085::writeRegister(int deviceAddress, byte address, byte val) {
   Wire.beginTransmission(deviceAddress); // start transmission to device 
   Wire.write(address);       // send register address
@@ -167,7 +173,8 @@ void BMP085::writeRegister(int deviceAddress, byte address, byte val) {
   Wire.endTransmission();     // end transmission
 }
 
-int readRegister(int deviceAddress, byte address){
+//Reads a BMP085 register
+int BMP085::readRegister(int deviceAddress, byte address){
 
   int v;
   Wire.beginTransmission(deviceAddress);
@@ -184,6 +191,7 @@ int readRegister(int deviceAddress, byte address){
   return v;
 }
 
+//Calculates altitude given pressure in Pa
 float BMP085::calcAltitude(float pressure){
 
   float A = pressure/101325;
