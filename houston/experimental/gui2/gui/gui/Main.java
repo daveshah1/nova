@@ -1,5 +1,7 @@
 package gui;
 
+//This is Jameson's Code.  Don't touch it unless you don't like the look of your face.
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -31,6 +33,7 @@ import javax.swing.SwingConstants;
 import javax.swing.JCheckBox;
 import javax.swing.BoxLayout;
 
+
 public class Main {
 
 	private JFrame frame;
@@ -57,6 +60,9 @@ public class Main {
 	/**
 	 * Create the application.
 	 */
+	
+
+	
 	public Main() {
 		initialize();
 	}
@@ -65,6 +71,8 @@ public class Main {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
+		//Someone OOP this shizz:
 		
 		frame = new JFrame();
 		frame.setBounds(100,100,1280,739);
@@ -131,9 +139,11 @@ public class Main {
 		JButton btnControl_1 = new JButton("Control 2");
 		panel_2.add(btnControl_1);
 		
+		
 		JLabel map = null;
+		 // Usage: ImageIcon = google(String location, Boolean WantMarkers?, String OKSureMarkers, Boolean WantPaths?, String OKSurePaths, Int ZoomLevel, String TypeOfMap);		
 		try {
-			map_2 = new JLabel("", getMap.google("SW139JT"), SwingConstants.LEADING);
+			map_2 = new JLabel("", getMap.google("SW139JT", false, null, false, null, 14, "RoadMap"), SwingConstants.LEADING);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -182,3 +192,5 @@ public class Main {
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
 }
+
+//Pony
