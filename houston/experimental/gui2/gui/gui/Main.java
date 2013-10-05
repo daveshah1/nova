@@ -1,6 +1,7 @@
 package gui;
 
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
+import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.tilesources.OfflineOsmTileSource;
 
 import java.awt.EventQueue;
@@ -31,6 +32,10 @@ import javax.swing.Box;
 import java.awt.FlowLayout;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
@@ -42,9 +47,15 @@ public class Main {
 
 	private JFrame frame;
     private JMapViewer map_2;
+    
+    private VirtualRover rover;
+    private MapMarkerDot targetPos;
+    private MapMarkerDot actualPos;
+    private ScheduledExecutorService updater;
 	/**
 	 * Launch the application.
 	 */
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -159,16 +170,33 @@ public class Main {
 		if(!Files.exists(Paths.get(System.getProperty("user.home")+"/mapcache/16"))) {
 			JOptionPane.showMessageDialog(frame, "Could not find downloaded maps. Mapping will be unavailable\nPlease read 'README-maps.txt'.");
 		}
-		
+		rover = new VirtualRover(51.48340,-0.23931);
 		map_2.setTileSource(new OfflineOsmTileSource("file:///" + System.getProperty("user.home").replace("\\","/") + "/mapcache/",16,16));
 		map_2.setDisplayPositionByLatLon(51.48340,-0.23931, 16);
-		map_2.addMouseListener(new MapClickHandler());
+		map_2.addMouseListener(new MapClickHandler(rover));
 		springLayout.putConstraint(SpringLayout.NORTH, map_2, 10, SpringLayout.NORTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, map_2, 10, SpringLayout.EAST, panel_1);
 		springLayout.putConstraint(SpringLayout.SOUTH, map_2, 300, SpringLayout.NORTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, map_2, -10, SpringLayout.EAST, frame.getContentPane());
 		frame.getContentPane().add( map_2);
 		
+		Runnable roverUpdater = new Runnable() {
+		    public void run() {
+		        rover.updatePosition();
+		        try {
+		        	map_2.removeMapMarker(actualPos);
+		        	map_2.removeMapMarker(targetPos);
+		        } finally {
+		        	
+		        };
+		        actualPos = new MapMarkerDot(Color.green, rover.currentLat, rover.currentLon);
+		        map_2.addMapMarker(actualPos);
+		        targetPos = new MapMarkerDot(Color.red, rover.targetLat, rover.targetLon);
+		        map_2.addMapMarker(targetPos);
+		    }
+		};
+		updater = Executors.newScheduledThreadPool(1);
+		updater.scheduleAtFixedRate(roverUpdater, 0, 50, TimeUnit.MILLISECONDS);
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.WHITE);
 		springLayout.putConstraint(SpringLayout.NORTH, panel_3, 10, SpringLayout.SOUTH, map_2);

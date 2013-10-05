@@ -11,7 +11,12 @@ import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 
 public class MapClickHandler implements MouseListener {
+    public MapClickHandler(VirtualRover rover) {
+		super();
+		this.rover = rover;
+	}
 
+	VirtualRover rover;
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		JMapViewer eventOriginator;
@@ -27,8 +32,10 @@ public class MapClickHandler implements MouseListener {
 			JOptionPane.showMessageDialog(eventOriginator.getRootPane(),
 					                      "Latitude: " + realPosition.getLat() + 
 					                      "\nLongitude: " + realPosition.getLon());
-			eventOriginator.addMapMarker(new MapMarkerDot( realPosition.getLat(),
-					 									   realPosition.getLon()));
+			//eventOriginator.addMapMarker(new MapMarkerDot( realPosition.getLat(),
+			//		 									   realPosition.getLon()));
+			rover.targetLat = realPosition.getLat();
+			rover.targetLon = realPosition.getLon();
 		}
 
 	}
