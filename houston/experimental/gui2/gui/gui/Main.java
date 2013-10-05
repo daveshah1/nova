@@ -41,8 +41,6 @@ import javax.swing.BoxLayout;
 public class Main {
 
 	private JFrame frame;
-	private JLabel map_1;
-	//private JLabel map_2;
     private JMapViewer map_2;
 	/**
 	 * Launch the application.
@@ -164,6 +162,7 @@ public class Main {
 		
 		map_2.setTileSource(new OfflineOsmTileSource("file:///" + System.getProperty("user.home").replace("\\","/") + "/mapcache/",16,16));
 		map_2.setDisplayPositionByLatLon(51.48340,-0.23931, 16);
+		map_2.addMouseListener(new MapClickHandler());
 		springLayout.putConstraint(SpringLayout.NORTH, map_2, 10, SpringLayout.NORTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, map_2, 10, SpringLayout.EAST, panel_1);
 		springLayout.putConstraint(SpringLayout.SOUTH, map_2, 300, SpringLayout.NORTH, frame.getContentPane());
