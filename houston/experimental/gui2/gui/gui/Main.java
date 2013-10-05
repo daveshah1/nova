@@ -1,6 +1,7 @@
 package gui;
 
-//This is Jameson's Code.  Don't touch it unless you don't like the look of your face.
+import org.openstreetmap.gui.jmapviewer.JMapViewer;
+import org.openstreetmap.gui.jmapviewer.tilesources.OfflineOsmTileSource;
 
 import java.awt.EventQueue;
 
@@ -8,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SpringLayout;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -27,6 +29,8 @@ import java.awt.Component;
 import javax.swing.Box;
 
 import java.awt.FlowLayout;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
@@ -38,8 +42,8 @@ public class Main {
 
 	private JFrame frame;
 	private JLabel map_1;
-	private JLabel map_2;
-
+	//private JLabel map_2;
+    private JMapViewer map_2;
 	/**
 	 * Launch the application.
 	 */
@@ -71,8 +75,6 @@ public class Main {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
-		//Someone OOP this shizz:
 		
 		frame = new JFrame();
 		frame.setBounds(100,100,1280,739);
@@ -139,7 +141,7 @@ public class Main {
 		JButton btnControl_1 = new JButton("Control 2");
 		panel_2.add(btnControl_1);
 		
-		
+		/*
 		JLabel map = null;
 		 // Usage: ImageIcon = google(String location, Boolean WantMarkers?, String OKSureMarkers, Boolean WantPaths?, String OKSurePaths, Int ZoomLevel, String TypeOfMap);		
 		try {
@@ -153,7 +155,20 @@ public class Main {
 		springLayout.putConstraint(SpringLayout.WEST, map_2, 10, SpringLayout.EAST, panel_1);
 		springLayout.putConstraint(SpringLayout.SOUTH, map_2, 300, SpringLayout.NORTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, map_2, -10, SpringLayout.EAST, frame.getContentPane());
-		frame.getContentPane().add( map_2);	
+		frame.getContentPane().add( map_2);	*/
+		map_2 = new JMapViewer();
+		//System.err.println(System.getProperty("user.home").replace("\\","/") + "/mapcache/");
+		if(!Files.exists(Paths.get(System.getProperty("user.home")+"/mapcache/16"))) {
+			JOptionPane.showMessageDialog(frame, "Could not find downloaded maps. Mapping will be unavailable\nPlease read 'README-maps.txt'.");
+		}
+		
+		map_2.setTileSource(new OfflineOsmTileSource("file:///" + System.getProperty("user.home").replace("\\","/") + "/mapcache/",16,16));
+		map_2.setDisplayPositionByLatLon(51.48340,-0.23931, 16);
+		springLayout.putConstraint(SpringLayout.NORTH, map_2, 10, SpringLayout.NORTH, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, map_2, 10, SpringLayout.EAST, panel_1);
+		springLayout.putConstraint(SpringLayout.SOUTH, map_2, 300, SpringLayout.NORTH, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, map_2, -10, SpringLayout.EAST, frame.getContentPane());
+		frame.getContentPane().add( map_2);
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.WHITE);
@@ -184,7 +199,7 @@ public class Main {
 		JCheckBox chckbxData_3 = new JCheckBox("Data 4");
 		panel_4.add(chckbxData_3);
 		
-		JButton btnConvertIntoDem = new JButton("Convert into dem sexy graphs!");
+		JButton btnConvertIntoDem = new JButton("Generate graphs!");
 		panel_4.add(btnConvertIntoDem);
 		
 

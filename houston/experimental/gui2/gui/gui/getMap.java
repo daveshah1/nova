@@ -13,7 +13,6 @@ import javax.swing.ImageIcon;
  * 
  * Add variables, etc and customise mapURL to suit our needs.
  * 
- * TODO: OBJECT ORIENTATED WAYPOINT ADDING SHIZZ
  */
 
 public class getMap {
