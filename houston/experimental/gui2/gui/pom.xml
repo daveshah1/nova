@@ -1,0 +1,13 @@
+<project>
+  <!-- model version is always 4.0.0 for Maven 2.x POMs -->
+  <modelVersion>4.0.0</modelVersion>
+ 
+  <!-- project coordinates, i.e. a group of values which
+       uniquely identify this project -->
+ 
+  <groupId>uk.co.teamnova</groupId>
+  <artifactId>nova-control</artifactId>
+  <version>1.0</version>
+ 
+  <!-- library dependencies -->
+</project>
