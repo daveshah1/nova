@@ -83,7 +83,7 @@ public abstract class AbstractOsmTileSource implements TileSource {
     }
 
     public String getAttributionText(int zoom, Coordinate topLeft, Coordinate botRight) {
-        return "© OpenStreetMap contributors, CC-BY-SA ";
+        return "(c) OpenStreetMap contributors, CC-BY-SA ";
     }
 
     public String getAttributionLinkURL() {

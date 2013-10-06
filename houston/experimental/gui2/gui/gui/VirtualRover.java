@@ -12,19 +12,19 @@ public class VirtualRover {
 	public void updatePosition() {
 		double diff;
 		if(currentLon > targetLon) {
-			diff = Math.min(currentLon - targetLon,0.000005);
+			diff = Math.min(currentLon - targetLon,0.000015);
 			currentLon -= diff;
 		}
 		if(currentLon < targetLon) {
-			diff = Math.min(targetLon - currentLon,0.000005);
+			diff = Math.min(targetLon - currentLon,0.000015);
 			currentLon += diff;
 		}
 		if(currentLat > targetLat) {
-			diff = Math.min(currentLat - targetLat,0.000005);
+			diff = Math.min(currentLat - targetLat,0.000015);
 			currentLat -= diff;
 		}
 		if(currentLat < targetLat) {
-			diff = Math.min(targetLat - currentLat,0.000005);
+			diff = Math.min(targetLat - currentLat,0.000015);
 			currentLat += diff;
 		}
 	}

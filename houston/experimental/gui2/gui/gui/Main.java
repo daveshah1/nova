@@ -150,29 +150,14 @@ public class Main {
 		JButton btnControl_1 = new JButton("Control 2");
 		panel_2.add(btnControl_1);
 		
-		/*
-		JLabel map = null;
-		 // Usage: ImageIcon = google(String location, Boolean WantMarkers?, String OKSureMarkers, Boolean WantPaths?, String OKSurePaths, Int ZoomLevel, String TypeOfMap);		
-		try {
-			map_2 = new JLabel("", getMap.google("SW139JT", false, null, false, null, 14, "RoadMap"), SwingConstants.LEADING);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		map_2.setVerticalAlignment(SwingConstants.TOP);
-		springLayout.putConstraint(SpringLayout.NORTH, map_2, 10, SpringLayout.NORTH, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, map_2, 10, SpringLayout.EAST, panel_1);
-		springLayout.putConstraint(SpringLayout.SOUTH, map_2, 300, SpringLayout.NORTH, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, map_2, -10, SpringLayout.EAST, frame.getContentPane());
-		frame.getContentPane().add( map_2);	*/
 		map_2 = new JMapViewer();
 		//System.err.println(System.getProperty("user.home").replace("\\","/") + "/mapcache/");
-		if(!Files.exists(Paths.get(System.getProperty("user.home")+"/mapcache/16"))) {
+		if(!Files.exists(Paths.get(System.getProperty("user.home")+"/mapcache/17"))) {
 			JOptionPane.showMessageDialog(frame, "Could not find downloaded maps. Mapping will be unavailable\nPlease read 'README-maps.txt'.");
 		}
-		rover = new VirtualRover(51.48340,-0.23931);
-		map_2.setTileSource(new OfflineOsmTileSource("file:///" + System.getProperty("user.home").replace("\\","/") + "/mapcache/",16,16));
-		map_2.setDisplayPositionByLatLon(51.48340,-0.23931, 16);
+		rover = new VirtualRover(51.487556,-0.2381855);
+		map_2.setTileSource(new OfflineOsmTileSource("file:///" + System.getProperty("user.home").replace("\\","/") + "/mapcache/",14,18));
+		map_2.setDisplayPositionByLatLon(51.487556,-0.2381855, 16);
 		map_2.addMouseListener(new MapClickHandler(rover));
 		springLayout.putConstraint(SpringLayout.NORTH, map_2, 10, SpringLayout.NORTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, map_2, 10, SpringLayout.EAST, panel_1);
@@ -195,8 +180,10 @@ public class Main {
 		        map_2.addMapMarker(targetPos);
 		    }
 		};
+		
+		//Schedule automated updating of the simulated rover.
 		updater = Executors.newScheduledThreadPool(1);
-		updater.scheduleAtFixedRate(roverUpdater, 0, 50, TimeUnit.MILLISECONDS);
+		updater.scheduleAtFixedRate(roverUpdater, 0, 100, TimeUnit.MILLISECONDS);
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.WHITE);
 		springLayout.putConstraint(SpringLayout.NORTH, panel_3, 10, SpringLayout.SOUTH, map_2);

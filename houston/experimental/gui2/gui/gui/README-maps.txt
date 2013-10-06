@@ -1,4 +1,16 @@
+**** READ THIS CAREFULLY TO ENABLE MAPPING ****
+
 I have changed from Google Maps to an offline version of OpenStreetMap. To use it you must do the following:
+
+ --- A - The easy way --- 
+1. Create the folder
+(Windows) C:\Users\[username]\mapcache
+(Linux) ~/mapcache
+
+2. Extract the zip file from the team dropbox under Resources/Maps into this folder
+
+ --- B - The hard way ---
+Follow if you don't have Dropbox access or want to customise the map region
 
 1. Download jTileDownloader from here & run the Jar:
 http://svn.openstreetmap.org/applications/utils/downloading/JTileDownloader/trunk/release/jTileDownloader-0-6-1.zip
@@ -11,10 +23,11 @@ http://svn.openstreetmap.org/applications/utils/downloading/JTileDownloader/trun
 
 5. Close the map selection window
 
-6. Select Output Zoom Level 16 from the drop-down list
+6. In the output zoom levels textbox enter 14,15,16,17,18
 
 7. Set the outputfolder to
 (Windows) C:\Users\[username]\mapcache
 (Linux) ~/mapcache
+[create this folder if it doesn't exist]
 
 8. Click 'Download tiles'

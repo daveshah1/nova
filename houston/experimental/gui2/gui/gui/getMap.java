@@ -5,6 +5,9 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 
 /*
+ * 
+ * NOW OBSELETE AND KEPT FOR REFERENCE ONLY
+ * 
  * Documentation found here:
  * https://developers.google.com/maps/documentation/staticmaps/?csw=1
  * 
