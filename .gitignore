@@ -225,3 +225,5 @@ pip-log.txt
 cores/
 libraries/
 obj/
+
+.class
