@@ -21,6 +21,7 @@ public class MapClickHandler implements MouseListener {
 	public void mouseClicked(MouseEvent arg0) {
 		JMapViewer eventOriginator;
 		int xCoord, yCoord;
+		int move;
 		Coordinate realPosition;
 		if(arg0.getComponent() instanceof JMapViewer) { //Basic sanity check
 			//Obtain the original JMapViewer for position look-up
@@ -29,13 +30,19 @@ public class MapClickHandler implements MouseListener {
 			xCoord = arg0.getX();
 			yCoord = arg0.getY();
 			realPosition = eventOriginator.getPosition(xCoord,yCoord);
-			JOptionPane.showMessageDialog(eventOriginator.getRootPane(),
-					                      "Latitude: " + realPosition.getLat() + 
-					                      "\nLongitude: " + realPosition.getLon());
+			//JOptionPane.showMessageDialog(eventOriginator, realPosition, null, yCoord);
+			move = JOptionPane.showConfirmDialog(eventOriginator.getRootPane(), "Latitude: " + realPosition.getLat() + 
+                    "\nLongitude: " + realPosition.getLon(), "Confirm Move", JOptionPane.YES_NO_OPTION);
+			// David's Penguiney Code
+			//JOptionPane.showConfirmDialog(null, eventOriginator.getRootPane(),
+			//		                      "Latitude: " + realPosition.getLat() + 
+			//		                      "\nLongitude: " + realPosition.getLon(), JOptionPane.YES_NO_OPTION);
 			//eventOriginator.addMapMarker(new MapMarkerDot( realPosition.getLat(),
 			//		 									   realPosition.getLon()));
+			if (move == JOptionPane.YES_OPTION) {
 			rover.targetLat = realPosition.getLat();
 			rover.targetLon = realPosition.getLon();
+			}
 		}
 
 	}

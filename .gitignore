@@ -226,4 +226,4 @@ cores/
 libraries/
 obj/
 
-.class
+*.class
