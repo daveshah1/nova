@@ -155,7 +155,7 @@ public class Main {
 		if(!Files.exists(Paths.get(System.getProperty("user.home")+"/mapcache/17"))) {
 			JOptionPane.showMessageDialog(frame, "Could not find downloaded maps. Mapping will be unavailable\nPlease read 'README-maps.txt'.");
 		}
-		rover = new VirtualRover(51.487556,-0.2381855);
+		rover = new VirtualRover(new Position(51.487556,-0.2381855));
 		map_2.setTileSource(new OfflineOsmTileSource("file:///" + System.getProperty("user.home").replace("\\","/") + "/mapcache/",14,18));
 		map_2.setDisplayPositionByLatLon(51.487556,-0.2381855, 16);
 		map_2.addMouseListener(new MapClickHandler(rover));
@@ -174,10 +174,15 @@ public class Main {
 		        } finally {
 		        	
 		        };
-		        actualPos = new MapMarkerDot(Color.green, rover.currentLat, rover.currentLon);
+		        actualPos = new MapMarkerDot(Color.green
+		        		, rover.currentPosition.getLat()
+		        		, rover.currentPosition.getLon());
 		        map_2.addMapMarker(actualPos);
-		        targetPos = new MapMarkerDot(Color.red, rover.targetLat, rover.targetLon);
+		        targetPos = new MapMarkerDot(Color.red
+		        		, rover.targetPosition.getLat()
+		        		, rover.targetPosition.getLon());
 		        map_2.addMapMarker(targetPos);
+		        System.err.println( rover.targetPosition.getLat() + "," + rover.currentPosition.getLon());
 		    }
 		};
 		

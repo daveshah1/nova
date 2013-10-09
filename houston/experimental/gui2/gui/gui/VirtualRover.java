@@ -1,16 +1,20 @@
 package gui;
 
 public class VirtualRover {
-	public VirtualRover(double currentLat, double currentLon) {
+	Position currentPosition, targetPosition;
+	public VirtualRover(Position p) {
 		super();
-		this.currentLat = currentLat;
-		this.currentLon = currentLon;
-		this.targetLat = this.currentLat;
-		this.targetLon = this.currentLon;
+		this.currentPosition = p;
+		this.targetPosition = new Position(p);
+		
 	}
-	double currentLat, currentLon, targetLat, targetLon;
 	public void updatePosition() {
 		double diff;
+		double currentLon, currentLat, targetLon, targetLat;
+		currentLon = currentPosition.getLon();
+		currentLat = currentPosition.getLat();
+		targetLon = targetPosition.getLon();
+		targetLat = targetPosition.getLat();
 		if(currentLon > targetLon) {
 			diff = Math.min(currentLon - targetLon,0.000015);
 			currentLon -= diff;
@@ -27,5 +31,6 @@ public class VirtualRover {
 			diff = Math.min(targetLat - currentLat,0.000015);
 			currentLat += diff;
 		}
+		currentPosition.set(currentLat,currentLon);
 	}
 }

@@ -22,19 +22,23 @@ public class MapClickHandler implements MouseListener {
 		JMapViewer eventOriginator;
 		int xCoord, yCoord;
 		int move;
-		Coordinate realPosition;
+		Position realPosition;
 		if(arg0.getComponent() instanceof JMapViewer) { //Basic sanity check
 			//Obtain the original JMapViewer for position look-up
 			eventOriginator = (JMapViewer) arg0.getComponent();
 			//Get raw X and Y coordinates (relative to the JMapViewer object)
 			xCoord = arg0.getX();
 			yCoord = arg0.getY();
-			realPosition = eventOriginator.getPosition(xCoord,yCoord);
-			move = JOptionPane.showConfirmDialog(eventOriginator.getRootPane(), "Latitude: " + realPosition.getLat() + 
-                    "\nLongitude: " + realPosition.getLon(), "Confirm Move", JOptionPane.YES_NO_OPTION);
+			realPosition = new Position(eventOriginator.getPosition(xCoord,yCoord));
+			move = JOptionPane.showConfirmDialog(eventOriginator.getRootPane(),
+					"Move to " + realPosition.toString() + "?\n" +
+                    "Distance: " + 
+					String.format("%.0f",realPosition.getDistanceTo(rover.currentPosition)*1000) +
+					"m",
+					"Confirm Move", 
+					JOptionPane.YES_NO_OPTION);
 			if (move == JOptionPane.YES_OPTION) {
-			rover.targetLat = realPosition.getLat();
-			rover.targetLon = realPosition.getLon();
+			rover.targetPosition = realPosition;
 			}
 		}
 
