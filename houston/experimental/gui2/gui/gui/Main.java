@@ -127,18 +127,34 @@ public class Main {
 		frame.getContentPane().add(panel_2);
 		panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		JButton btnControl = new JButton("Control 1");
-		panel_2.add(btnControl);
+		JButton btnUp = new JButton("Up");
+		panel_2.add(btnUp);
 		
-		JButton btnSelfDestruct = new JButton("Self Destruct");
+		/*JButton btnSelfDestruct = new JButton("Self Destruct");
 		btnSelfDestruct.setToolTipText("Boom!");
 		btnSelfDestruct.setBackground(Color.RED);
 		btnSelfDestruct.setForeground(Color.WHITE);
-		panel_2.add(btnSelfDestruct);
+		panel_2.add(btnSelfDestruct);*/
+	
+		//Jameson: add a nice SpringLayout here
+		JButton btnLeft = new JButton("Left");
+		springLayout.putConstraint(SpringLayout.NORTH,btnLeft,20,SpringLayout.NORTH,panel_1);
+
+		panel_2.add(btnLeft);
+
+		JButton btnStop = new JButton("STOP");
+		btnStop.setBackground(Color.RED);
+		btnStop.setForeground(Color.WHITE);
 		
-		JButton btnControl_1 = new JButton("Control 2");
-		panel_2.add(btnControl_1);
+		panel_2.add(btnStop);
 		
+		JButton btnRight = new JButton("Right");
+;
+		panel_2.add(btnRight);
+		
+		JButton btnDown = new JButton("Down");
+;
+		panel_2.add(btnDown);
 		//Warn the user if downloaded maps cannot be found
 		if(!Files.exists(Paths.get(System.getProperty("user.home")+"/mapcache/17"))) {
 			JOptionPane.showMessageDialog(frame, "Could not find downloaded maps. Mapping will be unavailable\nPlease read 'README-maps.txt'.");
