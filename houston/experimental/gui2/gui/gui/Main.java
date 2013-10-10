@@ -54,6 +54,7 @@ public class Main {
     private MapMarkerDot targetPos;
     private MapMarkerDot actualPos;
     private ScheduledExecutorService updater;
+    private LargeMap m;
 	/**
 	 * Launch the application.
 	 */
@@ -262,8 +263,8 @@ public class Main {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				LargeMap m = new LargeMap(rover);
-				
+				m = new LargeMap(rover);
+				System.err.println("Click!");
 			}
 			
 		});

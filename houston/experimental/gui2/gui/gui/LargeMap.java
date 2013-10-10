@@ -22,8 +22,10 @@ public class LargeMap extends JFrame implements WindowStateListener {
     private MapMarkerDot actualPos;
     Rover rover;
 	LargeMap(Rover r) {
+		super();
 		setTitle("Map");
 		setSize(500,500);
+		map_2 = new JMapViewer();
 		map_2.setTileSource(new OfflineOsmTileSource("file:///" + System.getProperty("user.home").replace("\\","/") + "/mapcache/",14,18));
 		map_2.setDisplayPositionByLatLon(51.487556,-0.2381855, 16);
 		map_2.addMouseListener(new MapClickHandler(r));
@@ -62,6 +64,7 @@ public class LargeMap extends JFrame implements WindowStateListener {
 			}; 
 		};
 		r.attachListener(l);
+        setVisible(true);
 		rover = r;
 	}
 	@Override
