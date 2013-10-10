@@ -1,16 +1,9 @@
 package gui;
 
-import java.awt.Color;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 
 import javax.swing.JFrame;
-import javax.swing.SpringLayout;
-
-import org.openstreetmap.gui.jmapviewer.JMapViewer;
-import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
-import org.openstreetmap.gui.jmapviewer.tilesources.OfflineOsmTileSource;
-
 /*
  * This class is designed to provide a window showing an enlarged map.
  */

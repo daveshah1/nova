@@ -1,6 +1,5 @@
 package gui;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 //Provides a base class that handles the calling RoverUpdateListeners

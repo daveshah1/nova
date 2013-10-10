@@ -10,13 +10,10 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JOptionPane;
 
-import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
-import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
-import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 
 public class MapClickHandler implements MouseListener {
-    public MapClickHandler(Rover rover) {
+	public MapClickHandler(Rover rover) {
 		super();
 		this.rover = rover;
 	}
@@ -38,11 +35,11 @@ public class MapClickHandler implements MouseListener {
 			//Prompt the user whether they really want to move
 			move = JOptionPane.showConfirmDialog(eventOriginator.getRootPane(),
 					"Move to " + realPosition.toString() + "?\n" +
-                    "Distance: " + 
-					String.format("%.0f",realPosition.getDistanceTo(rover.currentPosition)*1000) +
-					"m",
-					"Confirm Move", 
-					JOptionPane.YES_NO_OPTION);
+							"Distance: " + 
+							String.format("%.0f",realPosition.getDistanceTo(rover.currentPosition)*1000) +
+							"m",
+							"Confirm Move", 
+							JOptionPane.YES_NO_OPTION);
 			if (move == JOptionPane.YES_OPTION) {
 				rover.targetPosition = realPosition;
 			}

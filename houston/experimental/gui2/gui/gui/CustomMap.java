@@ -4,7 +4,6 @@ import java.awt.Color;
 
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
-import org.openstreetmap.gui.jmapviewer.interfaces.TileCache;
 import org.openstreetmap.gui.jmapviewer.tilesources.OfflineOsmTileSource;
 
 /*
@@ -14,6 +13,7 @@ import org.openstreetmap.gui.jmapviewer.tilesources.OfflineOsmTileSource;
  */
 
 public class CustomMap extends JMapViewer implements RoverUpdateListener {
+	private static final long serialVersionUID = 4892531410795284424L;
 	Rover rover;
 	MapMarkerDot actualPos, targetPos;
 	public CustomMap(Rover r) {

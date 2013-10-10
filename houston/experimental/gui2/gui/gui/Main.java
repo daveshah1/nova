@@ -1,14 +1,9 @@
 package gui;
 
-import org.openstreetmap.gui.jmapviewer.JMapViewer;
-import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
-import org.openstreetmap.gui.jmapviewer.tilesources.OfflineOsmTileSource;
 
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SpringLayout;
@@ -18,11 +13,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.JTextArea;
 
-import java.awt.TextArea;
-
-import javax.swing.JTextPane;
-
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Component;
@@ -34,15 +24,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Timer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
-import javax.swing.SwingConstants;
 import javax.swing.JCheckBox;
-import javax.swing.BoxLayout;
 
 
 public class Main {
@@ -51,10 +38,9 @@ public class Main {
     private CustomMap map_2;
     
     private VirtualRover rover;
-    private MapMarkerDot targetPos;
-    private MapMarkerDot actualPos;
     private ScheduledExecutorService updater;
-    private LargeMap m;
+    @SuppressWarnings("unused")
+	private LargeMap m;
 	/**
 	 * Launch the application.
 	 */
@@ -169,7 +155,6 @@ public class Main {
 		Runnable roverUpdater = new Runnable() {
 		    public void run() {
 		        rover.updatePosition();
-		        //System.err.println( rover.targetPosition.getLat() + "," + rover.currentPosition.getLon());
 		    }
 		};
 		
