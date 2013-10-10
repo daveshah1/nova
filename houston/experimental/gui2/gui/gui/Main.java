@@ -168,7 +168,7 @@ public class Main {
 		Runnable roverUpdater = new Runnable() {
 		    public void run() {
 		        rover.updatePosition();
-		        try {
+		       /* try {
 		        	map_2.removeMapMarker(actualPos);
 		        	map_2.removeMapMarker(targetPos);
 		        } finally {
@@ -181,10 +181,47 @@ public class Main {
 		        targetPos = new MapMarkerDot(Color.red
 		        		, rover.targetPosition.getLat()
 		        		, rover.targetPosition.getLon());
-		        map_2.addMapMarker(targetPos);
+		        map_2.addMapMarker(targetPos); */
 		        System.err.println( rover.targetPosition.getLat() + "," + rover.currentPosition.getLon());
 		    }
 		};
+		
+		
+		
+		rover.attachListener(new RoverUpdateListener() {
+			@Override
+			public void positionUpdated(Position newPosition,
+				Position targetPosition, Rover r) {
+					try {
+						map_2.removeMapMarker(actualPos);
+						map_2.removeMapMarker(targetPos);
+					} finally {
+		        	
+					};
+			        actualPos = new MapMarkerDot(Color.green
+			        		, newPosition.getLat()
+			        		, newPosition.getLon());
+			        map_2.addMapMarker(actualPos);
+			        targetPos = new MapMarkerDot(Color.red
+			        		, targetPosition.getLat()
+			        		, targetPosition.getLon());
+			        map_2.addMapMarker(targetPos);
+				
+			}
+
+			@Override
+			public void dataUpdated(double temperature, double pressure, Rover r) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void messageRecieved(String message, Rover r) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 		
 		//Schedule automated updating of the simulated rover.
 		updater = Executors.newScheduledThreadPool(1);

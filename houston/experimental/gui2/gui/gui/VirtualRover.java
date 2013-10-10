@@ -1,7 +1,6 @@
 package gui;
 
-public class VirtualRover {
-	Position currentPosition, targetPosition;
+public class VirtualRover extends Rover {
 	public VirtualRover(Position p) {
 		super();
 		this.currentPosition = p;
@@ -32,5 +31,7 @@ public class VirtualRover {
 			currentLat += diff;
 		}
 		currentPosition.set(currentLat,currentLon);
+		firePositionUpdate();
+		
 	}
 }
