@@ -48,7 +48,7 @@ import javax.swing.BoxLayout;
 public class Main {
 
 	private JFrame frame;
-    private JMapViewer map_2;
+    private CustomMap map_2;
     
     private VirtualRover rover;
     private MapMarkerDot targetPos;
@@ -153,15 +153,13 @@ public class Main {
 		JButton btnControl_1 = new JButton("Control 2");
 		panel_2.add(btnControl_1);
 		
-		map_2 = new JMapViewer();
-		//System.err.println(System.getProperty("user.home").replace("\\","/") + "/mapcache/");
+		//Warn the user if downloaded maps cannot be found
 		if(!Files.exists(Paths.get(System.getProperty("user.home")+"/mapcache/17"))) {
 			JOptionPane.showMessageDialog(frame, "Could not find downloaded maps. Mapping will be unavailable\nPlease read 'README-maps.txt'.");
 		}
+		
 		rover = new VirtualRover(new Position(51.487556,-0.2381855));
-		map_2.setTileSource(new OfflineOsmTileSource("file:///" + System.getProperty("user.home").replace("\\","/") + "/mapcache/",14,18));
-		map_2.setDisplayPositionByLatLon(51.487556,-0.2381855, 16);
-		map_2.addMouseListener(new MapClickHandler(rover));
+		map_2 = new CustomMap(rover);
 		springLayout.putConstraint(SpringLayout.NORTH, map_2, 10, SpringLayout.NORTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, map_2, 10, SpringLayout.EAST, panel_1);
 		springLayout.putConstraint(SpringLayout.SOUTH, map_2, 300, SpringLayout.NORTH, frame.getContentPane());
@@ -171,61 +169,11 @@ public class Main {
 		Runnable roverUpdater = new Runnable() {
 		    public void run() {
 		        rover.updatePosition();
-		       /* try {
-		        	map_2.removeMapMarker(actualPos);
-		        	map_2.removeMapMarker(targetPos);
-		        } finally {
-		        	
-		        };
-		        actualPos = new MapMarkerDot(Color.green
-		        		, rover.currentPosition.getLat()
-		        		, rover.currentPosition.getLon());
-		        map_2.addMapMarker(actualPos);
-		        targetPos = new MapMarkerDot(Color.red
-		        		, rover.targetPosition.getLat()
-		        		, rover.targetPosition.getLon());
-		        map_2.addMapMarker(targetPos); */
-		        System.err.println( rover.targetPosition.getLat() + "," + rover.currentPosition.getLon());
+		        //System.err.println( rover.targetPosition.getLat() + "," + rover.currentPosition.getLon());
 		    }
 		};
 		
-		
-		
-		rover.attachListener(new RoverUpdateListener() {
-			@Override
-			public void positionUpdated(Position newPosition,
-				Position targetPosition, Rover r) {
-					try {
-						map_2.removeMapMarker(actualPos);
-						map_2.removeMapMarker(targetPos);
-					} finally {
-		        	
-					};
-			        actualPos = new MapMarkerDot(Color.green
-			        		, newPosition.getLat()
-			        		, newPosition.getLon());
-			        map_2.addMapMarker(actualPos);
-			        targetPos = new MapMarkerDot(Color.red
-			        		, targetPosition.getLat()
-			        		, targetPosition.getLon());
-			        map_2.addMapMarker(targetPos);
-				
-			}
-
-			@Override
-			public void dataUpdated(double temperature, double pressure, Rover r) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void messageRecieved(String message, Rover r) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
-		
+	
 		//Schedule automated updating of the simulated rover.
 		updater = Executors.newScheduledThreadPool(1);
 		updater.scheduleAtFixedRate(roverUpdater, 0, 100, TimeUnit.MILLISECONDS);

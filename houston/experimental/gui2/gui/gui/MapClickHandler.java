@@ -1,5 +1,10 @@
 package gui;
 
+/*
+ * This class handles rover position updating, and is designed to be attached as
+ * a mouse listener to a JMapViewer or CustomMap
+ */
+
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -30,6 +35,7 @@ public class MapClickHandler implements MouseListener {
 			xCoord = arg0.getX();
 			yCoord = arg0.getY();
 			realPosition = new Position(eventOriginator.getPosition(xCoord,yCoord));
+			//Prompt the user whether they really want to move
 			move = JOptionPane.showConfirmDialog(eventOriginator.getRootPane(),
 					"Move to " + realPosition.toString() + "?\n" +
                     "Distance: " + 
@@ -38,7 +44,7 @@ public class MapClickHandler implements MouseListener {
 					"Confirm Move", 
 					JOptionPane.YES_NO_OPTION);
 			if (move == JOptionPane.YES_OPTION) {
-			rover.targetPosition = realPosition;
+				rover.targetPosition = realPosition;
 			}
 		}
 
