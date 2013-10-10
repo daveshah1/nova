@@ -122,39 +122,51 @@ public class Main {
 		panel_2.setBackground(Color.WHITE);
 		springLayout.putConstraint(SpringLayout.NORTH, panel_2, 0, SpringLayout.SOUTH, verticalStrut);
 		springLayout.putConstraint(SpringLayout.WEST, panel_2, 10, SpringLayout.EAST, panel);
-		springLayout.putConstraint(SpringLayout.SOUTH, panel_2, 0, SpringLayout.SOUTH, panel);
+		//springLayout.putConstraint(SpringLayout.SOUTH, panel_2, 0, SpringLayout.SOUTH, panel);
 		springLayout.putConstraint(SpringLayout.EAST, panel_2, 0, SpringLayout.EAST, panel_1);
 		frame.getContentPane().add(panel_2);
 		panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		JButton btnUp = new JButton("Up");
+		JButton btnUp = new JButton("North");
 		panel_2.add(btnUp);
 		
+		JPanel panel_2b = new JPanel();
+		panel_2b.setBackground(Color.WHITE);
+		springLayout.putConstraint(SpringLayout.NORTH, panel_2b, 0, SpringLayout.SOUTH, panel_2);
+		springLayout.putConstraint(SpringLayout.WEST, panel_2b, 10, SpringLayout.EAST, panel);
+		springLayout.putConstraint(SpringLayout.EAST, panel_2b, 0, SpringLayout.EAST, panel_2);
+		frame.getContentPane().add(panel_2b);
+		panel_2b.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		/*JButton btnSelfDestruct = new JButton("Self Destruct");
 		btnSelfDestruct.setToolTipText("Boom!");
 		btnSelfDestruct.setBackground(Color.RED);
 		btnSelfDestruct.setForeground(Color.WHITE);
 		panel_2.add(btnSelfDestruct);*/
-	
-		//Jameson: add a nice SpringLayout here
-		JButton btnLeft = new JButton("Left");
-		springLayout.putConstraint(SpringLayout.NORTH,btnLeft,20,SpringLayout.NORTH,panel_1);
+		JButton btnLeft = new JButton("West");
 
-		panel_2.add(btnLeft);
+		panel_2b.add(btnLeft);
 
-		JButton btnStop = new JButton("STOP");
+		JButton btnStop = new JButton(" STOP ");
 		btnStop.setBackground(Color.RED);
 		btnStop.setForeground(Color.WHITE);
 		
-		panel_2.add(btnStop);
+		panel_2b.add(btnStop);
 		
-		JButton btnRight = new JButton("Right");
-;
-		panel_2.add(btnRight);
+		JButton btnRight = new JButton("East");
+
+		panel_2b.add(btnRight);
 		
-		JButton btnDown = new JButton("Down");
-;
-		panel_2.add(btnDown);
+		JPanel panel_2c = new JPanel();
+		panel_2c.setBackground(Color.WHITE);
+		springLayout.putConstraint(SpringLayout.NORTH, panel_2c, 0, SpringLayout.SOUTH, panel_2b);
+		springLayout.putConstraint(SpringLayout.WEST, panel_2c, 10, SpringLayout.EAST, panel);
+		springLayout.putConstraint(SpringLayout.SOUTH, panel_2c, 0, SpringLayout.SOUTH, panel);
+		springLayout.putConstraint(SpringLayout.EAST, panel_2c, 0, SpringLayout.EAST, panel_2);
+		frame.getContentPane().add(panel_2c);
+		panel_2c.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		JButton btnDown = new JButton("South");
+		panel_2c.add(btnDown);
 		//Warn the user if downloaded maps cannot be found
 		if(!Files.exists(Paths.get(System.getProperty("user.home")+"/mapcache/17"))) {
 			JOptionPane.showMessageDialog(frame, "Could not find downloaded maps. Mapping will be unavailable\nPlease read 'README-maps.txt'.");
