@@ -30,6 +30,8 @@ import java.awt.Component;
 import javax.swing.Box;
 
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Timer;
@@ -255,7 +257,16 @@ public class Main {
 		JCheckBox chckbxData_3 = new JCheckBox("Data 4");
 		panel_4.add(chckbxData_3);
 		
-		JButton btnConvertIntoDem = new JButton("Generate graphs!");
+		JButton btnConvertIntoDem = new JButton("Open Large Map");
+		btnConvertIntoDem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				LargeMap m = new LargeMap(rover);
+				
+			}
+			
+		});
 		panel_4.add(btnConvertIntoDem);
 		
 

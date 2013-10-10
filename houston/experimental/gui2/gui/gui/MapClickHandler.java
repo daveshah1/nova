@@ -11,12 +11,12 @@ import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 
 public class MapClickHandler implements MouseListener {
-    public MapClickHandler(VirtualRover rover) {
+    public MapClickHandler(Rover rover) {
 		super();
 		this.rover = rover;
 	}
 
-	VirtualRover rover;
+	Rover rover;
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		JMapViewer eventOriginator;
