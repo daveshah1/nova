@@ -6,6 +6,8 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneLayout;
 import javax.swing.SpringLayout;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -13,6 +15,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.JTextArea;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Component;
@@ -81,23 +84,32 @@ public class Main {
 		SpringLayout springLayout = new SpringLayout();
 		frame.getContentPane().setLayout(springLayout);
 		
-		JPanel panel = new JPanel();
+		/*JPanel panel = new JPanel();
 		panel.setBackground(Color.BLACK);
 		panel.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		springLayout.putConstraint(SpringLayout.NORTH, panel, 10, SpringLayout.NORTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, panel, 10, SpringLayout.WEST, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, panel, -10, SpringLayout.SOUTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, panel, 300, SpringLayout.WEST, frame.getContentPane());
-		frame.getContentPane().add(panel);
+		frame.getContentPane().add(panel);*/
 		
-		JTextArea txtrDebugArea = new JTextArea();
+		/*JTextArea txtrDebugArea = new JTextArea();
 		txtrDebugArea.setFont(new Font("Lucida Console", Font.PLAIN, 12));
 		txtrDebugArea.setForeground(Color.GREEN);
 		txtrDebugArea.setBackground(Color.BLACK);
 		txtrDebugArea.setEditable(false);
-		txtrDebugArea.setText("Debug Area\nPlaceholder");
-		panel.add(txtrDebugArea);
-		
+		txtrDebugArea.setText("Debug Area\nPlaceholder");*/
+		Console console = new Console();
+		JScrollPane panel = new JScrollPane(console,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		springLayout.putConstraint(SpringLayout.NORTH, panel, 10, SpringLayout.NORTH, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, panel, 10, SpringLayout.WEST, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, panel, -10, SpringLayout.SOUTH, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, panel, 300, SpringLayout.WEST, frame.getContentPane());
+		frame.getContentPane().add(panel);
+		//panel.add(consoleContainer);
+
 		Component horizontalStrut = Box.createHorizontalStrut(10);
 		springLayout.putConstraint(SpringLayout.NORTH, horizontalStrut, 0, SpringLayout.NORTH, panel);
 		springLayout.putConstraint(SpringLayout.WEST, horizontalStrut, 0, SpringLayout.EAST, panel);
@@ -173,6 +185,7 @@ public class Main {
 		}
 		
 		rover = new VirtualRover(new Position(51.487556,-0.2381855));
+		rover.attachListener(console);
 		map_2 = new CustomMap(rover);
 		springLayout.putConstraint(SpringLayout.NORTH, map_2, 10, SpringLayout.NORTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, map_2, 10, SpringLayout.EAST, panel_1);
