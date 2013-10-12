@@ -169,15 +169,19 @@ public class Main {
 		panel_2b.add(btnRight);
 		
 		JPanel panel_2c = new JPanel();
-		panel_2c.setBackground(Color.WHITE);
 		springLayout.putConstraint(SpringLayout.NORTH, panel_2c, 0, SpringLayout.SOUTH, panel_2b);
 		springLayout.putConstraint(SpringLayout.WEST, panel_2c, 10, SpringLayout.EAST, panel);
-		springLayout.putConstraint(SpringLayout.SOUTH, panel_2c, 0, SpringLayout.SOUTH, panel);
+		springLayout.putConstraint(SpringLayout.SOUTH, panel_2c, 33, SpringLayout.SOUTH, panel_2b);
 		springLayout.putConstraint(SpringLayout.EAST, panel_2c, 0, SpringLayout.EAST, panel_2);
+		panel_2c.setBackground(Color.WHITE);
 		frame.getContentPane().add(panel_2c);
 		panel_2c.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JButton btnDown = new JButton("South");
+		btnDown.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
 		panel_2c.add(btnDown);
 		//Warn the user if downloaded maps cannot be found
 		if(!Files.exists(Paths.get(System.getProperty("user.home")+"/mapcache/17"))) {
@@ -243,6 +247,35 @@ public class Main {
 			
 		});
 		panel_4.add(btnConvertIntoDem);
+		
+		JButton btnCreateGraphs = new JButton("Create Graphs");
+		panel_4.add(btnCreateGraphs);
+		
+		JPanel panel_2d = new JPanel();
+		springLayout.putConstraint(SpringLayout.NORTH, panel_2d, 0, SpringLayout.SOUTH, panel_2c);
+		springLayout.putConstraint(SpringLayout.WEST, panel_2d, 10, SpringLayout.EAST, panel);
+		springLayout.putConstraint(SpringLayout.SOUTH, panel_2d, 33, SpringLayout.SOUTH, panel_2c);
+		springLayout.putConstraint(SpringLayout.EAST, panel_2d, -10, SpringLayout.WEST, panel_3);
+		panel_2d.setBackground(Color.WHITE);
+		frame.getContentPane().add(panel_2d);
+		
+		JLabel lblDebugControls = new JLabel("Debug Controls:");
+		panel_2d.add(lblDebugControls);
+		
+		JButton btnStart = new JButton("Start");
+		panel_2d.add(btnStart);
+		
+		JButton btnPause = new JButton("Pause");
+		panel_2d.add(btnPause);
+		
+		JLabel lblVideoControls = new JLabel("Video Controls:");
+		panel_2d.add(lblVideoControls);
+		
+		JButton btnStartRecord = new JButton("Start Record");
+		panel_2d.add(btnStartRecord);
+		
+		JButton btnStopRecord = new JButton("Stop Record");
+		panel_2d.add(btnStopRecord);
 		
 
 
