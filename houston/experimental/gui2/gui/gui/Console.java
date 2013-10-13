@@ -7,6 +7,7 @@ import javax.swing.JTextArea;
 
 public class Console extends JTextArea implements RoverUpdateListener {
 	private static final long serialVersionUID = 4989941948035851333L;
+	public boolean paused = false;
 	Console() {
 		super();
 		setLineWrap(true);
@@ -16,11 +17,22 @@ public class Console extends JTextArea implements RoverUpdateListener {
 		setBackground(Color.BLACK);
 		setEditable(false);
 	}
+	
+	public void startDebug() {
+		paused = false;
+	}
+	
+	public void pauseDebug() {
+		paused = true;
+	}
+	
 	@Override
 	public void positionUpdated(Position newPosition, Position targetPosition,
 			Rover r) {
-		append(newPosition.toString() + "\n");
-		setCaretPosition(getDocument().getLength());
+		if(!paused) {
+			append(newPosition.toString() + "\n");
+			setCaretPosition(getDocument().getLength());
+		};
 	}
 	@Override
 	public void dataUpdated(double temperature, double pressure, Rover r) {

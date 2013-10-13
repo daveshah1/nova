@@ -6,7 +6,7 @@ import java.util.Vector;
 
 public class Rover {
 	Vector<RoverUpdateListener> listeners = new Vector<RoverUpdateListener>();
-	protected Position currentPosition, targetPosition;
+	public Position currentPosition, targetPosition;
 	protected double temperature, pressure;
 	
 	public Rover() {

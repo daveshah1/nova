@@ -7,17 +7,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneLayout;
 import javax.swing.SpringLayout;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.SoftBevelBorder;
-import javax.swing.JTextArea;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Component;
 
 import javax.swing.Box;
@@ -99,7 +93,7 @@ public class Main {
 		txtrDebugArea.setBackground(Color.BLACK);
 		txtrDebugArea.setEditable(false);
 		txtrDebugArea.setText("Debug Area\nPlaceholder");*/
-		Console console = new Console();
+		final Console console = new Console();
 		JScrollPane panel = new JScrollPane(console,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -140,6 +134,11 @@ public class Main {
 		panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JButton btnUp = new JButton("North");
+		btnUp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				rover.targetPosition.addOffset(0.0005,0);
+			}
+		});
 		panel_2.add(btnUp);
 		
 		JPanel panel_2b = new JPanel();
@@ -155,17 +154,29 @@ public class Main {
 		btnSelfDestruct.setForeground(Color.WHITE);
 		panel_2.add(btnSelfDestruct);*/
 		JButton btnLeft = new JButton("West");
-
+		btnLeft.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				rover.targetPosition.addOffset(0,-0.0005);
+			}
+		});	
 		panel_2b.add(btnLeft);
 
 		JButton btnStop = new JButton(" STOP ");
 		btnStop.setBackground(Color.RED);
 		btnStop.setForeground(Color.WHITE);
-		
+		btnStop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				rover.targetPosition = new Position(rover.currentPosition);
+			}
+		});		
 		panel_2b.add(btnStop);
 		
 		JButton btnRight = new JButton("East");
-
+		btnRight.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				rover.targetPosition.addOffset(0,0.0005);
+			}
+		});
 		panel_2b.add(btnRight);
 		
 		JPanel panel_2c = new JPanel();
@@ -180,6 +191,7 @@ public class Main {
 		JButton btnDown = new JButton("South");
 		btnDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				rover.targetPosition.addOffset(-0.0005,0);
 			}
 		});
 		panel_2c.add(btnDown);
@@ -238,7 +250,6 @@ public class Main {
 		
 		JButton btnConvertIntoDem = new JButton("Open Large Map");
 		btnConvertIntoDem.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				m = new LargeMap(rover);
@@ -264,9 +275,21 @@ public class Main {
 		
 		JButton btnStart = new JButton("Start");
 		panel_2d.add(btnStart);
+		btnStart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				console.startDebug();
+			}
+		});
 		
 		JButton btnPause = new JButton("Pause");
 		panel_2d.add(btnPause);
+		btnPause.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				console.pauseDebug();
+			}
+		});
 		
 		JLabel lblVideoControls = new JLabel("Video Controls:");
 		panel_2d.add(lblVideoControls);

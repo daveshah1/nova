@@ -35,6 +35,12 @@ public class Position {
 	public double getLon() {
 		return longitude;
 	}
+	
+	public void addOffset(double deltaLat, double deltaLon) {
+		latitude += deltaLat;
+		longitude += deltaLon;
+	}
+	
 	/*
 	 * This is based on an algorithm that relies on the Earth being a perfect sphere.
 	 * As it is not, there may be very minor inaccuracies of the order of +/-10m.
