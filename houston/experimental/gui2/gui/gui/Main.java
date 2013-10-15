@@ -94,8 +94,10 @@ public class Main {
 		txtrDebugArea.setBackground(Color.BLACK);
 		txtrDebugArea.setEditable(false);
 		txtrDebugArea.setText("Debug Area\nPlaceholder");*/
-		final Console console = new Console();
-		JScrollPane panel = new JScrollPane(console,
+		//final Console console = new Console();
+		
+		//Current console data should be in raw, not debug - change null in line below back to as appropriate later.
+		JScrollPane panel = new JScrollPane(null,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		springLayout.putConstraint(SpringLayout.NORTH, panel, 10, SpringLayout.NORTH, frame.getContentPane());
@@ -232,7 +234,7 @@ public class Main {
 		if(!Files.exists(Paths.get(System.getProperty("user.home")+"/mapcache/17"))) {
 			JOptionPane.showMessageDialog(frame, "Could not find downloaded maps. Mapping will be unavailable\nPlease read 'README-maps.txt'.");
 		}
-		
+		final Console console = new Console();
 		rover = new VirtualRover(new Position(51.487556,-0.2381855));
 		rover.attachListener(console);
 		map_2 = new CustomMap(rover);
@@ -259,14 +261,19 @@ public class Main {
 		springLayout.putConstraint(SpringLayout.SOUTH, panel_3, -10, SpringLayout.SOUTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, panel_3, -10, SpringLayout.EAST, frame.getContentPane());
 		frame.getContentPane().add(panel_3);
-		panel_3.setLayout(null);
 		
+		SpringLayout sl_panel_3 = new SpringLayout();
+		panel_3.setLayout(sl_panel_3);
 		JLabel lblRawDataHere = new JLabel("Raw Data Here");
-		lblRawDataHere.setBounds(110, 11, 73, 14);
+		sl_panel_3.putConstraint(SpringLayout.NORTH, lblRawDataHere, 11, SpringLayout.NORTH, panel_3);
+		sl_panel_3.putConstraint(SpringLayout.WEST, lblRawDataHere, 110, SpringLayout.WEST, panel_3);
 		panel_3.add(lblRawDataHere);
 		
 		JPanel panel_4 = new JPanel();
-		panel_4.setBounds(0, 319, 294, 62);
+		sl_panel_3.putConstraint(SpringLayout.NORTH, panel_4, 319, SpringLayout.NORTH, panel_3);
+		sl_panel_3.putConstraint(SpringLayout.WEST, panel_4, 0, SpringLayout.WEST, panel_3);
+		sl_panel_3.putConstraint(SpringLayout.SOUTH, panel_4, 381, SpringLayout.NORTH, panel_3);
+		sl_panel_3.putConstraint(SpringLayout.EAST, panel_4, 294, SpringLayout.WEST, panel_3);
 		panel_3.add(panel_4);
 		
 		JCheckBox chckbxData = new JCheckBox("Data 1");
@@ -299,7 +306,15 @@ public class Main {
 		springLayout.putConstraint(SpringLayout.NORTH, panel_2d, 0, SpringLayout.SOUTH, panel_2c);
 		springLayout.putConstraint(SpringLayout.WEST, panel_2d, 10, SpringLayout.EAST, panel);
 		springLayout.putConstraint(SpringLayout.SOUTH, panel_2d, 33, SpringLayout.SOUTH, panel_2c);
-		springLayout.putConstraint(SpringLayout.EAST, panel_2d, -10, SpringLayout.WEST, panel_3);
+
+		JScrollPane scrollPane = new JScrollPane(console,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		sl_panel_3.putConstraint(SpringLayout.NORTH, scrollPane, 0, SpringLayout.SOUTH, lblRawDataHere);
+		sl_panel_3.putConstraint(SpringLayout.WEST, scrollPane, 0, SpringLayout.WEST, panel_4);
+		sl_panel_3.putConstraint(SpringLayout.SOUTH, scrollPane, 0, SpringLayout.NORTH, panel_4);
+		sl_panel_3.putConstraint(SpringLayout.EAST, scrollPane, 0, SpringLayout.EAST, panel_3);
+		panel_3.add(scrollPane);
 		panel_2d.setBackground(Color.WHITE);
 		frame.getContentPane().add(panel_2d);
 		

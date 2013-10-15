@@ -30,7 +30,7 @@ public class Console extends JTextArea implements RoverUpdateListener {
 	public void positionUpdated(Position newPosition, Position targetPosition,
 			Rover r) {
 		if(!paused) {
-			append(newPosition.toString() + "\n");
+			append("D1|Location: " + newPosition.toString() + "\n");
 			setCaretPosition(getDocument().getLength());
 		};
 	}
