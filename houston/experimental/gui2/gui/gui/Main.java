@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 
 
 public class Main {
@@ -136,7 +137,15 @@ public class Main {
 		JButton btnUp = new JButton("North");
 		btnUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				int move;
+				move = JOptionPane.showConfirmDialog(null,
+						"Move South 0.0005D?\n" +
+								"Approx Distance: 35m",
+								"Confirm Move", 
+								JOptionPane.YES_NO_OPTION);
+				if (move == JOptionPane.YES_OPTION) {
 				rover.targetPosition.addOffset(0.0005,0);
+				}
 			}
 		});
 		panel_2.add(btnUp);
@@ -156,7 +165,15 @@ public class Main {
 		JButton btnLeft = new JButton("West");
 		btnLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				rover.targetPosition.addOffset(0,-0.0005);
+				int move;
+				move = JOptionPane.showConfirmDialog(null,
+						"Move West 0.0005D?\n" +
+								"Approx Distance: 35m",
+								"Confirm Move", 
+								JOptionPane.YES_NO_OPTION);
+				if (move == JOptionPane.YES_OPTION) {
+				rover.targetPosition.addOffset(0, -0.0005);
+				}
 			}
 		});	
 		panel_2b.add(btnLeft);
@@ -174,7 +191,15 @@ public class Main {
 		JButton btnRight = new JButton("East");
 		btnRight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				int move;
+				move = JOptionPane.showConfirmDialog(null,
+						"Move East 0.0005D?\n" +
+								"Approx Distance: 35m",
+								"Confirm Move", 
+								JOptionPane.YES_NO_OPTION);
+				if (move == JOptionPane.YES_OPTION) {
 				rover.targetPosition.addOffset(0,0.0005);
+				}
 			}
 		});
 		panel_2b.add(btnRight);
@@ -187,11 +212,19 @@ public class Main {
 		panel_2c.setBackground(Color.WHITE);
 		frame.getContentPane().add(panel_2c);
 		panel_2c.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
+		 
 		JButton btnDown = new JButton("South");
 		btnDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				int move;
+				move = JOptionPane.showConfirmDialog(null,
+						"Move South 0.0005D?\n" +
+								"Approx Distance: 35m",
+								"Confirm Move", 
+								JOptionPane.YES_NO_OPTION);
+				if (move == JOptionPane.YES_OPTION) {
 				rover.targetPosition.addOffset(-0.0005,0);
+				}
 			}
 		});
 		panel_2c.add(btnDown);
