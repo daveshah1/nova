@@ -2,7 +2,7 @@
 #include "BMP085.h"
 #include "SerialPacket.h"
 SerialPacket  sp;
-BMP085		  tp;
+MPL3115A2	  tp;
 void setup() {
 	Wire.begin();
 	sp.begin(9600);
@@ -22,11 +22,9 @@ void loop() {
 		sp.getCommand(cmd);
 		if(strncmp(cmd,"TP",2) == 0) { //Read temperature and pressure
 			char buffer[32];
-			float temp, pressure;
-			tp.getTP(temp,pressure);
 			//Serial.println(temp);
 			//Serial.println(pressure);
-			snprintf(buffer,32,"%d %ld",(int)temp*10,(long)pressure);
+			snprintf(buffer,32,"%d %ld",(int)tp.readTemp()*10,(long)tp.readPressure());
 			sp.sendReply("OK",buffer);
 		} else if(strncmp(cmd,"MT",2)==0) { //Motor control
 			char params[64];

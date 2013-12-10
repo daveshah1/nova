@@ -1,4 +1,9 @@
 #include "MPL3115A2.h"
+void MPL3115A2::begin() {
+  setModeBarometer(); // Measure pressure in Pascals from 20 to 110 kPa
+  setOversampleRate(7); // Set Oversample to the recommended 128
+  enableEventFlags(); // Enable all three pressure and temp event flags
+};
 
 //Returns the number of meters above sea level
 float MPL3115A2::readAltitude()
