@@ -8,8 +8,8 @@ class SerialPacket
 public:
 	SerialPacket();
 	bool isPacketAvailable();
-	char *getCommand();
-	char *getPayload();
+	void getCommand(char *buffer);
+	void getPayload(char *buffer);
 	void sendReply(char *status,char *payload);
 	void begin(int baud);
 private:

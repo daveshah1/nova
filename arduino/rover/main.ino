@@ -18,7 +18,8 @@ void setup() {
 
 void loop() {
 	if(sp.isPacketAvailable()) {
-		char *cmd = sp.getCommand();
+		char cmd[3];
+		sp.getCommand(cmd);
 		if(strncmp(cmd,"TP",2) == 0) { //Read temperature and pressure
 			char buffer[32];
 			float temp, pressure;
@@ -28,7 +29,8 @@ void loop() {
 			snprintf(buffer,32,"%d %ld",(int)temp*10,(long)pressure);
 			sp.sendReply("OK",buffer);
 		} else if(strncmp(cmd,"MT",2)==0) { //Motor control
-			char *params = sp.getPayload();
+			char params[64];
+			sp.getPayload(params);
 			bool commandOK = true;
 			switch(params[0]) {
 			case 'F':
@@ -71,11 +73,9 @@ void loop() {
 			} else {
 			sp.sendReply("PE","");
 			};
-			free(params);
 		} else { //Unknown command, return error status.
 			sp.sendReply("CE","");
 		};
-		free(cmd);
 	}
 	digitalWrite(A1,LOW); //Pulse LED as a 'heartbeat' indicator.
 	digitalWrite(A2,HIGH);

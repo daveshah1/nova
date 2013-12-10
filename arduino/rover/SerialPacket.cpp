@@ -49,33 +49,19 @@ bool SerialPacket::isPacketAvailable() {
 };
 
 /*
-Returns the command part of the recieved packet.
-
-WARNING: run free() on the returned string when you are finished.
+Fetches the command part of the received packet.
+Buffer must be char array length > 2
 */
-char *SerialPacket::getCommand() {
-	if(packetAvailable) {
-		char *cmd = (char*)malloc(2);
-		strncpy(cmd,currentPacket,2);//First two bytes are command		
-		return cmd;
-	} else {
-		return NULL;
-	};
+void SerialPacket::getCommand(char *buffer) {
+	strncpy(buffer,currentPacket,2);//First two bytes are command		
 };
 
 /*
-Returns the payload part of the recieved packet.
-
-WARNING: run free() on the returned string when you are finished.
+Fetches the payload part of the received packet.
+Buffer must be char array length > 64
 */
-char *SerialPacket::getPayload() {
-	if(packetAvailable) {
-		char *payload = (char*)malloc(64);
-		strncpy(payload,&(currentPacket[3]),64);//Everything from third byte onwards is the payload		
-		return payload;
-	} else {
-		return NULL;
-	};
+void SerialPacket::getPayload(char *buffer) {
+	strncpy(buffer,&(currentPacket[3]),64);//Everything from third byte onwards is the payload		
 };
 
 /*
