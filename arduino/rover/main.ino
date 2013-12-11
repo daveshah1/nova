@@ -1,19 +1,61 @@
 #include "Wire.h"
 #include "BMP085.h"
 #include "SerialPacket.h"
+#include "board.h"
 SerialPacket  sp;
 MPL3115A2	  tp;
+
+void errorBeep(short data[]) {
+	int length = data[0];
+	for(int i = 1;i<length;i++) {
+		tone(PIEZO,1500);
+		if(data[i] == LONG_BEEP) {
+			delay(700);
+		} else {
+			delay(300);
+		};
+		noTone();
+		delay(250);
+	};
+};
+
+//Take an average of multiple readings to improve stability and reduce errors.
+float readADC_oversample(int pin) {
+	long sum = 0;
+	for(int i = 0;i < 5;i++) {
+		sum += analogRead(pin);
+	};
+	return (sum / 5.0F);
+};
+
+//Return current battery voltage
+float readBattery() {
+	float vBat_raw = readADC_oversample(VBAT);
+	float vBat = ((vBat_raw * Vdd) / 1024.0F) * 2.0F * VBAT_CAL;
+	return vBat;
+};
+
+//Run Power On Self Tests
+void runTests() {
+	float vBat = readBattery();
+	
+};
+
 void setup() {
 	Wire.begin();
 	sp.begin(9600);
 	tp.begin();
-	pinMode(A2,OUTPUT);
-	pinMode(A1,OUTPUT);
+	pinMode(STAT_LED,OUTPUT);
+	pinMode(LNK_RDY,OUTPUT);
 
-	pinMode(6,OUTPUT);
-	pinMode(9,OUTPUT);
-	pinMode(10,OUTPUT);
-	pinMode(11,OUTPUT);
+	pinMode(M1A_CTL,OUTPUT);
+	pinMode(M1B_CTL,OUTPUT);
+	pinMode(M2A_CTL,OUTPUT);
+	pinMode(M2B_CTL,OUTPUT);
+	
+	digitalWrite(STAT_LED,HIGH);
+	//Power On Self Test
+	runTests();
 };
 
 void loop() {
@@ -32,16 +74,16 @@ void loop() {
 			bool commandOK = true;
 			switch(params[0]) {
 			case 'F':
-				digitalWrite(6,HIGH);
-				digitalWrite(9,LOW);
+				digitalWrite(M1A_CTL,HIGH);
+				digitalWrite(M1B_CTL,LOW);
 				break;
 			case 'S':
-				digitalWrite(6,LOW);
-				digitalWrite(9,LOW);
+				digitalWrite(M1A_CTL,LOW);
+				digitalWrite(M1B_CTL,LOW);
 				break;
 			case 'B':
-				digitalWrite(6,LOW);
-				digitalWrite(9,HIGH);
+				digitalWrite(M1A_CTL,LOW);
+				digitalWrite(M1B_CTL,HIGH);
 				break;
 			default:
 				commandOK = false;
@@ -50,16 +92,16 @@ void loop() {
 			if(commandOK) {
 				switch(params[2]) {
 				case 'F':
-					digitalWrite(10,HIGH);
-					digitalWrite(11,LOW);
+					digitalWrite(M2A_CTL,HIGH);
+					digitalWrite(M2B_CTL,LOW);
 					break;
 				case 'S':
-					digitalWrite(10,LOW);
-					digitalWrite(11,LOW);
+					digitalWrite(M2A_CTL,LOW);
+					digitalWrite(M2B_CTL,LOW);
 					break;
 				case 'B':
-					digitalWrite(10,LOW);
-					digitalWrite(11,HIGH);
+					digitalWrite(M2A_CTL,LOW);
+					digitalWrite(M2B_CTL,HIGH);
 					break;
 				default:
 					commandOK = false;
@@ -75,10 +117,8 @@ void loop() {
 			sp.sendReply("CE","");
 		};
 	}
-	digitalWrite(A1,LOW); //Pulse LED as a 'heartbeat' indicator.
-	digitalWrite(A2,HIGH);
+	digitalWrite(STAT_LED,LOW); //Pulse LED as a 'heartbeat' indicator.
 	delay(150);
-	digitalWrite(A1,HIGH);
-	digitalWrite(A2,LOW);
+	digitalWrite(STAT_LED,HIGH);
 	delay(150);
 };
