@@ -57,6 +57,7 @@ Object-oriented MPL3115A2 Library. Based on open source code from Sparkfun.
 class MPL3115A2 {
 	public:
 		void begin();
+		bool isPresent();
 		float readAltitude();
 		float readPressure();
 		float readTemp();

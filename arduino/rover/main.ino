@@ -38,6 +38,28 @@ float readBattery() {
 //Run Power On Self Tests
 void runTests() {
 	float vBat = readBattery();
+	printf("# VBAT = %d.%02d\n",(int)vBat,(int)(vBat * 100) % 100);
+	if(vBat < VBAT_DEAD) {
+		while(1) {
+			printf("# VBAT is critical!!\n");
+			errorBeep(BEEP_BATTERY_DEAD);
+			delay(1000);
+		};
+	};
+	if(vBat < VBAT_WARN) {
+		printf("# VBAT is low!!\n");
+		errorBeep(BEEP_BATTERY_LOW);
+		delay(500);
+	};
+	
+	if(!tp.isPresent()) {
+		while(1) {
+			printf("# MPL3115A2 missing or dead!!\n");
+			errorBeep(BEEP_NO_TP);
+			delay(1000);
+		};
+	};
+	
 	
 };
 
@@ -109,9 +131,9 @@ void loop() {
 				}
 			}
 			if(commandOK) {
-			sp.sendReply("OK","");
+				sp.sendReply("OK","");
 			} else {
-			sp.sendReply("PE","");
+				sp.sendReply("PE","");
 			};
 		} else { //Unknown command, return error status.
 			sp.sendReply("CE","");

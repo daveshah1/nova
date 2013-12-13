@@ -98,6 +98,11 @@ float MPL3115A2::readPressure()
   return(pressure);
 }
 
+bool MPL3115A2::isPresent() {
+	if(IIC_Read(WHO_AM_I) == 196) return true;
+	else return false;
+};
+
 float MPL3115A2::readTemp()
 {
   toggleOneShot(); //Toggle the OST bit causing the sensor to immediately take another reading
