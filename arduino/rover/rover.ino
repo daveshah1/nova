@@ -1,11 +1,11 @@
 #include "Wire.h"
-#include "BMP085.h"
+#include "MPL3115A2.h"
 #include "SerialPacket.h"
 #include "board.h"
 SerialPacket  sp;
-MPL3115A2	  tp;
+MPL3115A2     tp;
 
-void errorBeep(short data[]) {
+void errorBeep(const short data[]) {
 	int length = data[0];
 	for(int i = 1;i<length;i++) {
 		tone(PIEZO,1500);
@@ -14,7 +14,7 @@ void errorBeep(short data[]) {
 		} else {
 			delay(300);
 		};
-		noTone();
+		noTone(PIEZO);
 		delay(250);
 	};
 };
@@ -31,30 +31,31 @@ float readADC_oversample(int pin) {
 //Return current battery voltage
 float readBattery() {
 	float vBat_raw = readADC_oversample(VBAT);
-	float vBat = ((vBat_raw * Vdd) / 1024.0F) * 2.0F * VBAT_CAL;
+	float vBat = ((vBat_raw * VDD) / 1024.0F) * 2.0F * VBAT_CAL;
 	return vBat;
 };
 
 //Run Power On Self Tests
 void runTests() {
 	float vBat = readBattery();
-	printf("# VBAT = %d.%02d\n",(int)vBat,(int)(vBat * 100) % 100);
+	Serial.println(F("# VBAT = "));
+        Serial.println(vBat,2);
 	if(vBat < VBAT_DEAD) {
 		while(1) {
-			printf("# VBAT is critical!!\n");
+			Serial.println(F("# VBAT is critical!!\n"));
 			errorBeep(BEEP_BATTERY_DEAD);
 			delay(1000);
 		};
 	};
 	if(vBat < VBAT_WARN) {
-		printf("# VBAT is low!!\n");
+		Serial.println(F("# VBAT is low!!\n"));
 		errorBeep(BEEP_BATTERY_LOW);
 		delay(500);
 	};
 	
 	if(!tp.isPresent()) {
 		while(1) {
-			printf("# MPL3115A2 missing or dead!!\n");
+			Serial.println(F("# MPL3115A2 missing or dead!!\n"));
 			errorBeep(BEEP_NO_TP);
 			delay(1000);
 		};

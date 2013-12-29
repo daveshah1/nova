@@ -12,7 +12,7 @@ class BMP085
         void getTP(float &t, float &p);
         float calcAltitude(float pressure);
 	private:
-        const unsigned char OSS = 0;  // Oversampling Setting
+        const static unsigned char OSS = 0;  // Oversampling Setting
         void bmp085Calibration();
         float bmp085GetTemperature(unsigned int ut);
         long bmp085GetPressure(unsigned long up);

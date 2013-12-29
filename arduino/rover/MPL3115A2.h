@@ -3,7 +3,7 @@ Object-oriented MPL3115A2 Library. Based on open source code from Sparkfun.
 */
 
 #include <Wire.h> // for IIC communication
-
+#include <Arduino.h>
 //Constant definitions
 #define STATUS 0x00
 #define OUT_P_MSB 0x01
