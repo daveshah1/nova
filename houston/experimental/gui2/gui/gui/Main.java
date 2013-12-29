@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
 
 
 public class Main {
@@ -60,15 +59,13 @@ public class Main {
 	/**
 	 * Create the application.
 	 */
-	
 
-	
 	public Main() {
 		initialize();
 	}
 
 	/**
-	 * Initialize the contents of the frame.
+	 * Initialise the contents of the frame.
 	 */
 	private void initialize() {
 		
