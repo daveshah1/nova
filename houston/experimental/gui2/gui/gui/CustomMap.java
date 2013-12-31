@@ -25,7 +25,7 @@ public class CustomMap extends JMapViewer implements RoverUpdateListener {
 		setDisplayPositionByLatLon(51.487556,-0.2381855, 16);
 	}
 	@Override
-	public void positionUpdated(Position newPosition, Position targetPosition,
+	public void positionUpdated(Position newPosition, Position targetPosition, boolean atTargetPosition,
 			Rover r) {
 		try {
 			removeMapMarker(actualPos);
@@ -37,10 +37,12 @@ public class CustomMap extends JMapViewer implements RoverUpdateListener {
         		, newPosition.getLat()
         		, newPosition.getLon());
         addMapMarker(actualPos);
-        targetPos = new MapMarkerDot(Color.red
-        		, targetPosition.getLat()
-        		, targetPosition.getLon());
-        addMapMarker(targetPos);
+        if(!atTargetPosition) {
+	        targetPos = new MapMarkerDot(Color.red
+	        		, targetPosition.getLat()
+	        		, targetPosition.getLon());
+	        addMapMarker(targetPos);
+        };
 		
 	}
 	@Override

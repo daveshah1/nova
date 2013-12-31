@@ -15,24 +15,9 @@ public class NetworkSender {
 	public NetworkSender(String hostname) {
 		roverHostname = hostname;
 	}
-	
-	public NetworkResponse sendCommand(NetworkCommand command) {
-		if(!(roverSocket.isConnected()) || (roverSocket.isClosed())) {
-			return new NetworkResponse(NetworkStatus.ROVER_OFFLINE);
-		}
+	private boolean connect() {
 		try {
-			out.print(command.toString());
-			String responseText = in.readLine();
-			return new NetworkResponse(responseText);
-		} catch (SocketTimeoutException e) {
-			return new NetworkResponse(NetworkStatus.TIMEOUT);
-		} catch (Exception e) {
-			return new NetworkResponse(NetworkStatus.COMMUNICATION_ERROR);
-		}
-	}
-	
-	public boolean connect() {
-		try {
+			disconnect();
 			roverSocket = new Socket(roverHostname,3141);
 			roverSocket.setSoTimeout(2500);
 			out = new PrintWriter(roverSocket.getOutputStream(),true);
@@ -44,13 +29,30 @@ public class NetworkSender {
 		}
 	}
 	
-	public void disconnect() {
+	private void disconnect() {
 		try {
 			roverSocket.close();
 		} catch (Exception e) {
 			
 		}
 	}
+	public NetworkResponse sendCommand(NetworkCommand command) {
+		if(connect()) {
+			try {
+				out.println(command.toString());
+				String responseText = in.readLine();
+				return new NetworkResponse(responseText);
+			} catch (SocketTimeoutException e) {
+				return new NetworkResponse(NetworkStatus.TIMEOUT);
+			} catch (Exception e) {
+				return new NetworkResponse(NetworkStatus.COMMUNICATION_ERROR);
+			}
+		} else {
+			return new NetworkResponse(NetworkStatus.ROVER_OFFLINE);
+		}
+	}
+	
+	
 	
 
 }

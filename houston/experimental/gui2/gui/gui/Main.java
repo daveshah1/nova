@@ -70,7 +70,7 @@ public class Main {
 	private void initialize() {
 		
 		frame = new JFrame();
-		frame.setBounds(100,100,1280,739);
+		frame.setBounds(0,0,1280,739);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Nova | Mission Control");
 		SpringLayout springLayout = new SpringLayout();
@@ -133,7 +133,7 @@ public class Main {
 		frame.getContentPane().add(panel_2);
 		panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		JButton btnUp = new JButton("North");
+		JButton btnUp = new JButton("Forwards");
 		btnUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int move;
@@ -144,6 +144,7 @@ public class Main {
 								JOptionPane.YES_NO_OPTION);
 				if (move == JOptionPane.YES_OPTION) {
 				rover.targetPosition.addOffset(0.0005,0);
+				rover.atTargetPosition = false;
 				}
 			}
 		});
@@ -161,7 +162,7 @@ public class Main {
 		btnSelfDestruct.setBackground(Color.RED);
 		btnSelfDestruct.setForeground(Color.WHITE);
 		panel_2.add(btnSelfDestruct);*/
-		JButton btnLeft = new JButton("West");
+		JButton btnLeft = new JButton("Turn Left");
 		btnLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int move;
@@ -172,6 +173,7 @@ public class Main {
 								JOptionPane.YES_NO_OPTION);
 				if (move == JOptionPane.YES_OPTION) {
 				rover.targetPosition.addOffset(0, -0.0005);
+				rover.atTargetPosition = false;
 				}
 			}
 		});	
@@ -183,11 +185,12 @@ public class Main {
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				rover.targetPosition = new Position(rover.currentPosition);
+				rover.atTargetPosition = true;
 			}
 		});		
 		panel_2b.add(btnStop);
 		
-		JButton btnRight = new JButton("East");
+		JButton btnRight = new JButton("Turn Right");
 		btnRight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int move;
@@ -198,6 +201,7 @@ public class Main {
 								JOptionPane.YES_NO_OPTION);
 				if (move == JOptionPane.YES_OPTION) {
 				rover.targetPosition.addOffset(0,0.0005);
+				rover.atTargetPosition = false;
 				}
 			}
 		});
@@ -212,7 +216,7 @@ public class Main {
 		frame.getContentPane().add(panel_2c);
 		panel_2c.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		 
-		JButton btnDown = new JButton("South");
+		JButton btnDown = new JButton("Backwards");
 		btnDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int move;
@@ -223,6 +227,7 @@ public class Main {
 								JOptionPane.YES_NO_OPTION);
 				if (move == JOptionPane.YES_OPTION) {
 				rover.targetPosition.addOffset(-0.0005,0);
+				rover.atTargetPosition = false;
 				}
 			}
 		});
@@ -345,8 +350,30 @@ public class Main {
 		JButton btnStopRecord = new JButton("Stop Record");
 		panel_2d.add(btnStopRecord);
 		
-
-
+		final NetworkSender ns = new NetworkSender("127.0.0.1"); //For testing only, change to real IP later
+		
+		JPanel panel_2e = new JPanel();
+		springLayout.putConstraint(SpringLayout.NORTH, panel_2e, 0, SpringLayout.SOUTH, panel_2d);
+		springLayout.putConstraint(SpringLayout.WEST, panel_2e, 10, SpringLayout.EAST, panel);
+		springLayout.putConstraint(SpringLayout.SOUTH, panel_2e, 33, SpringLayout.SOUTH, panel_2d);
+		panel_2e.setBackground(Color.WHITE);
+		frame.getContentPane().add(panel_2e);
+		JLabel lblNetwork = new JLabel("Network:");
+		panel_2e.add(lblNetwork);
+		
+		JButton btnNetworkTest = new JButton("Test");
+		panel_2e.add(btnNetworkTest);
+		btnNetworkTest.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				NetworkResponse response = ns.sendCommand(new NetworkCommand("PI"));
+				if(response.getStatus() == NetworkStatus.OK) {
+					JOptionPane.showMessageDialog(null,"Network OK!");
+				} else {
+					JOptionPane.showMessageDialog(null,"Network error: " + response.getStatus().toString());
+				}
+			}
+		});
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
 }

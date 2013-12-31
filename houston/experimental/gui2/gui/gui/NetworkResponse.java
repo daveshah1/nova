@@ -8,7 +8,7 @@ public class NetworkResponse {
 			status = NetworkStatus.COMMUNICATION_ERROR;
 			payload = "";
 		} else {
-			if(response.substring(0, 2) != "RP") {
+			if(!response.substring(0, 2).contentEquals("RP")) {
 				status = NetworkStatus.COMMUNICATION_ERROR;
 				payload = "";
 			} else {

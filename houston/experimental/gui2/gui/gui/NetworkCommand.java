@@ -16,7 +16,7 @@ public class NetworkCommand {
 	}
 	public String toString() {
 		String s;
-		s = "HI " + command + " " + payload + "\n";
+		s = "HI " + command + " " + payload;
 		return s;
 	}
 }

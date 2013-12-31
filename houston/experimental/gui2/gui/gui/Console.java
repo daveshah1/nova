@@ -27,7 +27,7 @@ public class Console extends JTextArea implements RoverUpdateListener {
 	}
 	
 	@Override
-	public void positionUpdated(Position newPosition, Position targetPosition,
+	public void positionUpdated(Position newPosition, Position targetPosition, boolean atTargetPosition,
 			Rover r) {
 		if(!paused) {
 			append("D1|Location: " + newPosition.toString() + "\n");

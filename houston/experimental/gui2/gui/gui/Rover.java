@@ -7,11 +7,13 @@ import java.util.Vector;
 public class Rover {
 	Vector<RoverUpdateListener> listeners = new Vector<RoverUpdateListener>();
 	public Position currentPosition, targetPosition;
+	public boolean atTargetPosition;
 	protected double temperature, pressure;
 	
 	public Rover() {
 		currentPosition = new Position(0,0);
 		targetPosition = new Position(0,0);
+		atTargetPosition = true;
 	}
 	public void attachListener(RoverUpdateListener l) {
 		listeners.add(l);
@@ -23,7 +25,7 @@ public class Rover {
 	
 	protected void firePositionUpdate() {
 		for(RoverUpdateListener l : listeners) {
-			l.positionUpdated(currentPosition, targetPosition, this);
+			l.positionUpdated(currentPosition, targetPosition, atTargetPosition, this);
 		}
 	}
 	
