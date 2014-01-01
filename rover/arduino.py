@@ -69,3 +69,19 @@ def begin():
         stop()
         return False
     
+def motorCtl(left,right):
+    #Try up to 3 times
+    for i in range(1,3):
+        response = sendRequest("MT",left + " " + right)
+        if(response.status == STATUS_OK):
+            break
+
+def readTP():
+    for i in range(1,3):
+        response = sendRequest("TP","")
+        if(response.status == STATUS_OK):
+            splitstr = response.data.split(" ")
+            if(len(splitstr) < 2):
+                continue
+            return ( float(splitstr[0]) / 10, float(splitstr[1]) )
+    return (-1,-1)
