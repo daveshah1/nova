@@ -140,6 +140,21 @@ public class NetworkRover extends Rover {
 	}
 	
 	void stopRover() {
-		
+		NetworkCommand cmd = new NetworkCommand("ST");
+		NetworkStatus status = network.sendCommand(cmd).getStatus();
+		switch(status) {
+		case OK:
+			break;
+		case COMMUNICATION_ERROR:
+			//Try once more
+			NetworkStatus newStatus = network.sendCommand(cmd).getStatus();
+			if(newStatus == NetworkStatus.OK) break;
+			//Otherwise drop into error handling
+		default:
+			throwError("Couldn't stop - network error: " + status.toString());
+			return;
+		}
+		targetPosition = currentPosition;
+		atTargetPosition = true;
 	}
 }
