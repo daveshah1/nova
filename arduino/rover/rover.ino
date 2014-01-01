@@ -136,6 +136,8 @@ void loop() {
 			} else {
 				sp.sendReply("PE","");
 			};
+		} else if(strncmp(cmd,"PI",2)==0) {
+			sp.sendReply("OK","");
 		} else { //Unknown command, return error status.
 			sp.sendReply("CE","");
 		};
