@@ -6,6 +6,14 @@ public class NetworkRover extends Rover {
 	
 	private NetworkSender network;
 	private boolean online = false;
+	
+	enum MoveOperation {
+		FORWARDS,
+		BACKWARDS,
+		LEFT_TURN,
+		RIGHT_TURN
+	}
+	
 	public NetworkRover() {
 
 	}
@@ -32,7 +40,7 @@ public class NetworkRover extends Rover {
 		//Any other closing down stuff
 	}
 	
-	void moveToPosition(Position p) {
+	public void moveToPosition(Position p) {
 		targetPosition = p;
 		atTargetPosition = false;
 		NetworkCommand cmd = new NetworkCommand("GT",p.getLat() + " "  + p.getLon());
@@ -81,7 +89,7 @@ public class NetworkRover extends Rover {
 		}
 	}
 	
-	void update() {
+	public void update() {
 		if(online) {
 			//Test connectivity?
 			try {
@@ -94,6 +102,41 @@ public class NetworkRover extends Rover {
 			}
 			//Update T/P?
 		}
+	}
+	
+	public void moveManually(MoveOperation how) {
+		String opcode = "";
+		switch(how) {
+		case FORWARDS:
+			opcode = "F";
+			break;
+		case BACKWARDS:
+			opcode = "B";
+			break;
+		case LEFT_TURN:
+			opcode = "L";
+			break;
+		case RIGHT_TURN:
+			opcode = "R";
+			break;
+		}
+
+		NetworkCommand cmd = new NetworkCommand("MV",opcode);
+		NetworkStatus status = network.sendCommand(cmd).getStatus();
+		switch(status) {
+		case OK:
+			break;
+		case COMMUNICATION_ERROR:
+			//Try once more
+			NetworkStatus newStatus = network.sendCommand(cmd).getStatus();
+			if(newStatus == NetworkStatus.OK) break;
+			//Otherwise drop into error handling
+		default:
+			throwError("Couldn't move - network error: " + status.toString());
+			return;
+		}
+		targetPosition = currentPosition;
+		atTargetPosition = true;
 	}
 	
 	void stopRover() {

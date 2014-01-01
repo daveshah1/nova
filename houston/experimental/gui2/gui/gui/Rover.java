@@ -1,5 +1,7 @@
 package gui;
 
+import gui.NetworkRover.MoveOperation;
+
 import java.util.Vector;
 
 //Provides a base class that handles the calling RoverUpdateListeners
@@ -45,5 +47,17 @@ public class Rover {
 		for(RoverUpdateListener l : listeners) {
 			l.errorThrown(message, this);
 		}
+	}
+	
+	public void moveToPosition(Position p) {
+		
+	}
+	
+	public void update() {
+		
+	}
+	
+	public void moveManually(MoveOperation how) {
+		
 	}
 }

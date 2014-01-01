@@ -41,7 +41,7 @@ public class MapClickHandler implements MouseListener {
 							"Confirm Move", 
 							JOptionPane.YES_NO_OPTION);
 			if (move == JOptionPane.YES_OPTION) {
-				rover.targetPosition = realPosition;
+				rover.moveToPosition(realPosition);
 				rover.atTargetPosition = false;
 			}
 		}
