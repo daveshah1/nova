@@ -55,6 +55,11 @@ public class CustomMap extends JMapViewer implements RoverUpdateListener {
 		// Not used at present
 		
 	}
+	@Override
+	public void errorThrown(String message, Rover r) {
+		// TODO Auto-generated method stub
+		
+	}
 	public void shutDown() {
 		rover.removeListener(this);
 	}

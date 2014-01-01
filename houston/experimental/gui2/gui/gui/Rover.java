@@ -40,4 +40,10 @@ public class Rover {
 			l.messageRecieved(message, this);
 		}
 	};
+	
+	protected void throwError(String message) {
+		for(RoverUpdateListener l : listeners) {
+			l.errorThrown(message, this);
+		}
+	}
 }

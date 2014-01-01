@@ -44,4 +44,11 @@ public class Console extends JTextArea implements RoverUpdateListener {
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public void errorThrown(String message, Rover r) {
+		if(!paused) {
+			append("ERROR: " + message + "\n");
+			setCaretPosition(getDocument().getLength());
+		};
+	}
 }

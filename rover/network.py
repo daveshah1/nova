@@ -15,7 +15,12 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         print "{} wrote:".format(self.client_address[0])
         print self.data
         # just send back the same data, but upper-cased
-        self.request.sendall("RP OK\n")
+        if(self.data[3:5] == "PI"):        
+            self.request.sendall("RP OK\n")
+        elif(self.data[3:5] == "CL"):
+            self.request.sendall("RP OK 51.487556 -0.2381855")
+        else:
+            self.request.sendall("RP NC")
 
 def main():
     HOST, PORT = "localhost", 3141

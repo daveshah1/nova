@@ -34,7 +34,7 @@ public class Main {
 	private JFrame frame;
     private CustomMap map_2;
     
-    private VirtualRover rover;
+    private NetworkRover rover;
     private ScheduledExecutorService updater;
     @SuppressWarnings("unused")
 	private LargeMap m;
@@ -237,7 +237,7 @@ public class Main {
 			JOptionPane.showMessageDialog(frame, "Could not find downloaded maps. Mapping will be unavailable\nPlease read 'README-maps.txt'.");
 		}
 		final Console console = new Console();
-		rover = new VirtualRover(new Position(51.487556,-0.2381855));
+		rover = new NetworkRover();
 		rover.attachListener(console);
 		map_2 = new CustomMap(rover);
 		springLayout.putConstraint(SpringLayout.NORTH, map_2, 10, SpringLayout.NORTH, frame.getContentPane());
@@ -248,7 +248,7 @@ public class Main {
 		
 		Runnable roverUpdater = new Runnable() {
 		    public void run() {
-		        rover.updatePosition();
+		        rover.update();
 		    }
 		};
 		
@@ -350,7 +350,7 @@ public class Main {
 		JButton btnStopRecord = new JButton("Stop Record");
 		panel_2d.add(btnStopRecord);
 		
-		final NetworkSender ns = new NetworkSender("127.0.0.1"); //For testing only, change to real IP later
+		//final NetworkSender ns = new NetworkSender("127.0.0.1"); //For testing only, change to real IP later
 		
 		JPanel panel_2e = new JPanel();
 		springLayout.putConstraint(SpringLayout.NORTH, panel_2e, 0, SpringLayout.SOUTH, panel_2d);
@@ -361,17 +361,33 @@ public class Main {
 		JLabel lblNetwork = new JLabel("Network:");
 		panel_2e.add(lblNetwork);
 		
+		JButton btnNetworkStart = new JButton("Start");
+		panel_2e.add(btnNetworkStart);
+		btnNetworkStart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				rover.begin("127.0.0.1");
+			}
+		});
 		JButton btnNetworkTest = new JButton("Test");
 		panel_2e.add(btnNetworkTest);
 		btnNetworkTest.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				NetworkResponse response = ns.sendCommand(new NetworkCommand("PI"));
-				if(response.getStatus() == NetworkStatus.OK) {
+				NetworkStatus status = rover.testNetwork();
+				if(status == NetworkStatus.OK) {
 					JOptionPane.showMessageDialog(null,"Network OK!");
 				} else {
-					JOptionPane.showMessageDialog(null,"Network error: " + response.getStatus().toString());
+					JOptionPane.showMessageDialog(null,"Network error: " + status.toString());
 				}
+			}
+		});
+		JButton btnNetworkStop = new JButton("Stop");
+		panel_2e.add(btnNetworkStop);
+		btnNetworkStop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				rover.disconnect();
 			}
 		});
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
