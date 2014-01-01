@@ -35,9 +35,11 @@ public class Console extends JTextArea implements RoverUpdateListener {
 		};
 	}
 	@Override
-	public void dataUpdated(double temperature, double pressure, Rover r) {
-		// TODO Auto-generated method stub
-		
+	public void dataUpdated(TPData data, Rover r) {
+		if(!paused) {
+			append("D1|TP: " + data.toString() + "\n");
+			setCaretPosition(getDocument().getLength());
+		};		
 	}
 	@Override
 	public void messageRecieved(String message, Rover r) {

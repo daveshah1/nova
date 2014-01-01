@@ -3,7 +3,6 @@ package gui;
 import javax.swing.JOptionPane;
 
 public class NetworkRover extends Rover {
-	
 	private NetworkSender network;
 	private boolean online = false;
 	
@@ -31,7 +30,11 @@ public class NetworkRover extends Rover {
 	}
 	
 	NetworkStatus testNetwork() {
-		return network.sendCommand(new NetworkCommand("PI")).getStatus();
+		if(online) {
+			return network.sendCommand(new NetworkCommand("PI")).getStatus();
+		} else {
+			return NetworkStatus.ROVER_OFFLINE;
+		}
 	}
 	
 	void disconnect() {
@@ -96,11 +99,15 @@ public class NetworkRover extends Rover {
 				currentPosition = getPosition();
 				firePositionUpdate();
 			} catch (NetworkException e) {
-				throwError("Couldn't update position - network error: " + e.getErrorCode().toString());
-			} finally {
-				
-			}
-			//Update T/P?
+				throwError("Couldn't update position - error: " + e.getErrorCode().toString());
+			} 
+			
+			try {
+				currentData = getTP();
+				fireDataUpdate();
+			} catch (NetworkException e) {
+				throwError("Couldn't update TP - error: " + e.getErrorCode().toString());
+			} 
 		}
 	}
 	
@@ -132,14 +139,14 @@ public class NetworkRover extends Rover {
 			if(newStatus == NetworkStatus.OK) break;
 			//Otherwise drop into error handling
 		default:
-			throwError("Couldn't move - network error: " + status.toString());
+			throwError("Couldn't move - error: " + status.toString());
 			return;
 		}
 		targetPosition = currentPosition;
 		atTargetPosition = true;
 	}
 	
-	void stopRover() {
+	public void stopRover() {
 		NetworkCommand cmd = new NetworkCommand("ST");
 		NetworkStatus status = network.sendCommand(cmd).getStatus();
 		switch(status) {
@@ -151,10 +158,38 @@ public class NetworkRover extends Rover {
 			if(newStatus == NetworkStatus.OK) break;
 			//Otherwise drop into error handling
 		default:
-			throwError("Couldn't stop - network error: " + status.toString());
+			throwError("Couldn't stop - error: " + status.toString());
 			return;
 		}
 		targetPosition = currentPosition;
 		atTargetPosition = true;
+	}
+	
+	public TPData getTP() throws NetworkException {
+		NetworkCommand cmd = new NetworkCommand("TP");
+		NetworkResponse response = network.sendCommand(cmd);
+		switch(response.getStatus()) {
+		case OK:
+			break;
+		case COMMUNICATION_ERROR:
+			//Try once more
+			NetworkStatus newStatus = network.sendCommand(cmd).getStatus();
+			if(newStatus == NetworkStatus.OK) break;
+			//Otherwise drop into error handling
+		default:
+			targetPosition = currentPosition;
+			atTargetPosition = true;
+			throw new NetworkException(response.getStatus());
+		}
+		String splitStr[] = response.getPayload().split("\\s+");
+		if(splitStr.length < 2) throw new NetworkException(NetworkStatus.RESPONSE_INVALID,
+				"TP string returned: " + response.getPayload());
+		try {
+			double t = Double.parseDouble(splitStr[0]);
+			double p = Double.parseDouble(splitStr[1]);
+			return new TPData(t,p);
+		} catch(Exception e) {
+			throw new NetworkException(NetworkStatus.RESPONSE_INVALID,"TP string returned: " + response.getPayload());
+		}
 	}
 }

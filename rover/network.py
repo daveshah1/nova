@@ -19,6 +19,12 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
             self.request.sendall("RP OK\n")
         elif(self.data[3:5] == "CL"):
             self.request.sendall("RP OK 51.487556 -0.2381855")
+        elif(self.data[3:5] == "MV"):        
+            self.request.sendall("RP OK\n")
+        elif(self.data[3:5] == "ST"):        
+            self.request.sendall("RP OK\n")
+        elif(self.data[3:5] == "TP"):        
+            self.request.sendall("RP OK 21.0 100000\n")
         else:
             self.request.sendall("RP NC")
 

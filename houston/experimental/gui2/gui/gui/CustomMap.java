@@ -46,7 +46,7 @@ public class CustomMap extends JMapViewer implements RoverUpdateListener {
 		
 	}
 	@Override
-	public void dataUpdated(double temperature, double pressure, Rover r) {
+	public void dataUpdated(TPData data, Rover r) {
 		// Not used at present
 		
 	}

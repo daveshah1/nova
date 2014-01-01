@@ -10,7 +10,7 @@ public class Rover {
 	Vector<RoverUpdateListener> listeners = new Vector<RoverUpdateListener>();
 	public Position currentPosition, targetPosition;
 	public boolean atTargetPosition;
-	protected double temperature, pressure;
+	protected TPData currentData;
 	
 	public Rover() {
 		currentPosition = new Position(0,0);
@@ -33,7 +33,7 @@ public class Rover {
 	
 	protected void fireDataUpdate() {
 		for(RoverUpdateListener l : listeners) {
-			l.dataUpdated(temperature,pressure, this);
+			l.dataUpdated(currentData, this);
 		}
 	}
 	

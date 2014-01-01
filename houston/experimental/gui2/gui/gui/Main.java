@@ -341,8 +341,9 @@ public class Main {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				NetworkStatus status = rover.testNetwork();
+				long startTime = System.currentTimeMillis();
 				if(status == NetworkStatus.OK) {
-					JOptionPane.showMessageDialog(null,"Network OK!");
+					JOptionPane.showMessageDialog(null,"Network OK!\nLatency: " + (System.currentTimeMillis() - startTime) + "ms");
 				} else {
 					JOptionPane.showMessageDialog(null,"Network error: " + status.toString());
 				}
