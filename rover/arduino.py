@@ -74,7 +74,8 @@ def motorCtl(left,right):
     for i in range(1,3):
         response = sendRequest("MT",left + " " + right)
         if(response.status == STATUS_OK):
-            break
+            return True
+	return False
 
 def readTP():
     for i in range(1,3):
