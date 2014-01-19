@@ -17,6 +17,7 @@ class CommandResponse:
         self.data = data
 
 def sendRequest(command,data):
+    global arduinoPort
     try:
         arduinoPort.write("HI " + command + " " + data + "\n")
         response = arduinoPort.readline()
@@ -61,8 +62,11 @@ def stop():
 
 def begin():
     global arduinoPort
+    #Arduino is on UART1
     arduinoPort = serial.Serial("/dev/ttyO0",57600,timeout=3)
+    #Make sure Arduino and port is ready
     time.sleep(0.5)
+    #Ping Arduino
     if(testComms()):
         return True
     else:
@@ -75,9 +79,10 @@ def motorCtl(left,right):
         response = sendRequest("MT",left + " " + right)
         if(response.status == STATUS_OK):
             return True
-	return False
-
+    return False
+#Returns a tuple in form (temperature, pressure) or (-1,-1) if unsuccessful
 def readTP():
+    #Try up to 3 times
     for i in range(1,3):
         response = sendRequest("TP","")
         if(response.status == STATUS_OK):
