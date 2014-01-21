@@ -1,5 +1,11 @@
 <?xml version="1.0"?>
 <project name="Nova" default="compile">
+	<path id="project-classpath">
+		<fileset dir="/var/jar" includes="*.jar" />
+	</path>
+
+
+	<property name="classpath" value="/root/jdk1.7.0_40/jre/lib/ext/"/>
     <target name="clean" description="remove intermediate files">
         <delete dir="classes"/>
     </target>
@@ -8,7 +14,7 @@
     </target>
     <target name="compile" description="compile the Java source code to class files">
         <mkdir dir="classes"/>
-        <javac srcdir="." destdir="classes"/>
+        <javac srcdir="." destdir="classes" classpathref="project-classpath" includeantruntime="false"/>
     </target>
     <target name="jar" depends="compile" description="create a Jar file for the application">
         <jar destfile="nova.jar">
@@ -21,4 +27,5 @@
     <target name="output" depends="jar" description="copy jar to build folder">
         <copy file="nova.jar" todir="/var/www/builds" overwrite="true" force="true"/>
     </target>
+	
 </project>
