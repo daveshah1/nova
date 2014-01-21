@@ -1,10 +1,19 @@
 package gui;
+
+import gnu.io.CommPort;
+import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
+import gnu.io.PortInUseException;
+import gnu.io.SerialPort;
+import gnu.io.UnsupportedCommOperationException;
+
+
 /*
  * This class is designed to provide an interface to the Arduino on the base station
  * which is responsible for radio communications and antenna positioning.
  */
 public class BaseStationCommunications {
-
+	private SerialPort serialPort;
 	public BaseStationCommunications() {
 		// TODO Auto-generated constructor stub
 	}
@@ -13,6 +22,20 @@ public class BaseStationCommunications {
 	//False = Error
 	//Open the serial port
 	public boolean startCommunications(String port) {
+		CommPortIdentifier portIdentifier;
+		try {
+			portIdentifier = CommPortIdentifier.getPortIdentifier(port);
+			CommPort commPort = portIdentifier.open("novaController",500);
+			serialPort = (SerialPort) commPort;
+			serialPort.setSerialPortParams(57600,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
+		} catch (NoSuchPortException e) {
+			return false;
+		} catch (PortInUseException e) {
+			return false;
+		} catch (UnsupportedCommOperationException e) {
+			return false;
+		}
+		
 		return true;
 	}
 	
