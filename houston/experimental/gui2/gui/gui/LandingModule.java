@@ -24,7 +24,7 @@ public class LandingModule {
 
 	}
 
-	public void startCommunications(String serialPort) {
+	public void startCommunications(BaseStationCommunications baseStation) {
 
 	}
 
