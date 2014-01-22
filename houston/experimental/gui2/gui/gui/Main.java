@@ -261,7 +261,6 @@ public class Main {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				m = new LargeMap(rover);
-				System.err.println("Click!");
 			}
 			
 		});
@@ -360,5 +359,3 @@ public class Main {
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
 }
-
-//Pony

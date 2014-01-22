@@ -33,7 +33,9 @@ public class LandingModule {
 	};
 
 	public void removeListener(LandingModuleListener l) {
-		listeners.remove(l);
+		if(listeners.contains(l)) {
+			listeners.remove(l);
+		};
 	};
 
 	public void deployRover() {
@@ -56,11 +58,11 @@ public class LandingModule {
 			 radioBuffer += newData;
 			 while(true) {
 				 int endOfSentence = radioBuffer.indexOf("E");
-				 if(endOfSentence == -1) break;
+				 if(endOfSentence == -1) break; //No full packet remaining, stop
 				 String sentence = radioBuffer.substring(0,endOfSentence); //Split at ending delimiter
 				 radioBuffer = radioBuffer.substring(endOfSentence+1); //Put remainder back into buffer
 				 if(!sentence.startsWith("B")) continue; //Not a full sentence, discard
-				 //Trim start letter
+				 //Trim starting letter
 				 sentence = sentence.substring(1);
 				 String splitSentence[] = sentence.split(",");
 				 if(splitSentence.length < 7) continue;
@@ -70,7 +72,6 @@ public class LandingModule {
 				 if(gpsAvailable) {
 					 currentPosition = new Position( Double.parseDouble(splitSentence[3]), 
 							 Double.parseDouble(splitSentence[4]));
-					 
 				 }
 				 packetRecieved = true;
 

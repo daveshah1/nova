@@ -1,5 +1,7 @@
 package gui;
 
+import gui.LandingModule.DeploymentStatus;
+
 import java.awt.Color;
 
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
@@ -12,10 +14,10 @@ import org.openstreetmap.gui.jmapviewer.tilesources.OfflineOsmTileSource;
  * 
  */
 
-public class CustomMap extends JMapViewer implements RoverUpdateListener {
+public class CustomMap extends JMapViewer implements RoverUpdateListener, LandingModuleListener {
 	private static final long serialVersionUID = 4892531410795284424L;
 	Rover rover;
-	MapMarkerDot actualPos, targetPos;
+	MapMarkerDot actualPos, targetPos, modulePos;
 	public CustomMap(Rover r) {
 		super();
 		this.rover = r;
@@ -45,6 +47,9 @@ public class CustomMap extends JMapViewer implements RoverUpdateListener {
         };
 		
 	}
+	
+	// --- ROVER ---
+	
 	@Override
 	public void dataUpdated(TPData data, Rover r) {
 		// Not used at present
@@ -62,5 +67,30 @@ public class CustomMap extends JMapViewer implements RoverUpdateListener {
 	}
 	public void shutDown() {
 		rover.removeListener(this);
+	}
+	// --- LANDING MODULE ---
+	@Override
+	public void positionUpdated(Position newPosition, LandingModule m) {
+		try {
+			removeMapMarker(modulePos);
+		} finally {
+	        modulePos = new MapMarkerDot(Color.yellow
+	        		, newPosition.getLat()
+	        		, newPosition.getLon());
+	        addMapMarker(modulePos);
+		};
+		
+		
+	}
+	@Override
+	public void dataUpdated(TPData currentData, LandingModule m) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void statusUpdated(DeploymentStatus deployed, boolean connected,
+			LandingModule m) {
+		// TODO Auto-generated method stub
+		
 	}
 }
