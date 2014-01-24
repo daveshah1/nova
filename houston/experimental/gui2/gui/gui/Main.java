@@ -111,7 +111,7 @@ public class Main {
 		springLayout.putConstraint(SpringLayout.WEST, horizontalStrut, 0, SpringLayout.EAST, panel);
 		frame.getContentPane().add(horizontalStrut);
 		
-		JPanel panel_1 = new JPanel();
+		NetworkImageViewer panel_1 = new NetworkImageViewer();
 		panel_1.setToolTipText("Video Here");
 		panel_1.setBackground(Color.WHITE);
 		springLayout.putConstraint(SpringLayout.NORTH, panel_1, 0, SpringLayout.NORTH, panel);
@@ -119,7 +119,6 @@ public class Main {
 		springLayout.putConstraint(SpringLayout.SOUTH, panel_1, 480, SpringLayout.NORTH, panel);
 		springLayout.putConstraint(SpringLayout.EAST, panel_1, 640, SpringLayout.EAST, horizontalStrut);
 		frame.getContentPane().add(panel_1);
-		
 		Component verticalStrut = Box.createVerticalStrut(20);
 		springLayout.putConstraint(SpringLayout.NORTH, verticalStrut, 0, SpringLayout.SOUTH, panel_1);
 		springLayout.putConstraint(SpringLayout.WEST, verticalStrut, 0, SpringLayout.WEST, panel_1);
@@ -356,6 +355,8 @@ public class Main {
 				rover.disconnect();
 			}
 		});
+		panel_1.updateImage();
+
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
 }
