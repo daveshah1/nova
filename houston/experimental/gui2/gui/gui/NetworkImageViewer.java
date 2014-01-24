@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.LayoutManager;
 import java.awt.image.BufferedImage;
@@ -54,5 +55,10 @@ public class NetworkImageViewer extends JPanel {
 		if (image != null) {
 			g.drawImage(image, 0, 0, 640, 480, null);
 		}
+		g.setColor(new Color(255,0,0,100));
+		g.fillRect(295, 239, 15, 2);
+		g.fillRect(330, 239, 15, 2);
+		g.fillRect(319, 215, 2, 15);
+		g.fillRect(319, 250, 2, 15);
 	}
 }
