@@ -70,7 +70,7 @@ public class Main {
 	 * Initialise the contents of the frame.
 	 */
 	private void initialize() {
-		
+	
 		frame = new JFrame();
 		frame.setBounds(0,0,1280,739);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -198,8 +198,8 @@ public class Main {
 		});
 		panel_2c.add(btnDown);
 		//Warn the user if downloaded maps cannot be found
-		if(!Files.exists(Paths.get(System.getProperty("user.home")+"/mapcache/17"))) {
-			JOptionPane.showMessageDialog(frame, "Could not find downloaded maps. Mapping will be unavailable\nPlease read 'README-maps.txt'.");
+		if((!Files.exists(Paths.get("./mapcache/17"))) && (!Files.exists(Paths.get(System.getProperty("user.home") + "/mapcache/17")))) {
+			JOptionPane.showMessageDialog(frame, "Could not find downloaded maps. Mapping will be unavailable.");
 		}
 		final Console console = new Console();
 		rover = new NetworkRover();
@@ -356,7 +356,7 @@ public class Main {
 			}
 		});
 		panel_1.updateImage();
-
+		frame.toFront();
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
 }

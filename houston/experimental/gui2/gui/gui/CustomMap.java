@@ -3,6 +3,8 @@ package gui;
 import gui.LandingModule.DeploymentStatus;
 
 import java.awt.Color;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
@@ -23,7 +25,12 @@ public class CustomMap extends JMapViewer implements RoverUpdateListener, Landin
 		this.rover = r;
 		rover.attachListener(this);
 		addMouseListener(new MapClickHandler(rover));
-		setTileSource(new OfflineOsmTileSource("file:///" + System.getProperty("user.home").replace("\\","/") + "/mapcache/",14,18));
+		if(Files.exists(Paths.get("./mapcache/17"))) {
+			setTileSource(new OfflineOsmTileSource("file:///" + System.getProperty("user.dir").replace("\\","/") + "/mapcache/",14,18));
+		} else {
+			setTileSource(new OfflineOsmTileSource("file:///" + System.getProperty("user.home").replace("\\","/") + "/mapcache/",14,18));
+
+		}
 		setDisplayPositionByLatLon(51.487556,-0.2381855, 16);
 	}
 	@Override
