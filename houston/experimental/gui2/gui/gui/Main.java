@@ -355,6 +355,35 @@ public class Main {
 				rover.disconnect();
 			}
 		});
+		
+		JLabel lblMapControls = new JLabel("Map: ");
+		panel_2e.add(lblMapControls);
+		JButton btnMapGoto = new JButton("Go To");
+		panel_2e.add(btnMapGoto);
+		btnMapGoto.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				GoToDialog dialog = new GoToDialog(frame);
+				GoToDialogResult result = dialog.show(map_2.getPosition().getLat(),map_2.getPosition().getLon());
+				if(result.success) {
+					switch(result.selectedOption) {
+					case GOTO_ROVER:
+						map_2.setDisplayPositionByLatLon(rover.currentPosition.getLat(),
+								rover.currentPosition.getLon(), 
+								map_2.getZoom());
+						break;
+					case GOTO_MODULE:
+						//TODO
+						break;
+					case GOTO_LATLONG:
+						map_2.setDisplayPositionByLatLon(result.enteredPosition.getLat(),
+								result.enteredPosition.getLon(), 
+								map_2.getZoom());
+						break;
+					}
+				}
+			}
+		});
 		panel_1.updateImage();
 		frame.toFront();
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
