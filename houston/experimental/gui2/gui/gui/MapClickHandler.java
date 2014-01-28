@@ -25,27 +25,28 @@ public class MapClickHandler implements MouseListener {
 		int xCoord, yCoord;
 		int move;
 		Position realPosition;
-		if(arg0.getComponent() instanceof JMapViewer) { //Basic sanity check
-			//Obtain the original JMapViewer for position look-up
-			eventOriginator = (JMapViewer) arg0.getComponent();
-			//Get raw X and Y coordinates (relative to the JMapViewer object)
-			xCoord = arg0.getX();
-			yCoord = arg0.getY();
-			realPosition = new Position(eventOriginator.getPosition(xCoord,yCoord));
-			//Prompt the user whether they really want to move
-			move = JOptionPane.showConfirmDialog(eventOriginator.getRootPane(),
-					"Move to " + realPosition.toString() + "?\n" +
-							"Distance: " + 
-							String.format("%.0f",realPosition.getDistanceTo(rover.currentPosition)*1000) +
-							"m",
-							"Confirm Move", 
-							JOptionPane.YES_NO_OPTION);
-			if (move == JOptionPane.YES_OPTION) {
-				rover.moveToPosition(realPosition);
-				rover.atTargetPosition = false;
+		if(arg0.getButton() == MouseEvent.BUTTON1) {
+			if(arg0.getComponent() instanceof JMapViewer) { //Basic sanity check
+				//Obtain the original JMapViewer for position look-up
+				eventOriginator = (JMapViewer) arg0.getComponent();
+				//Get raw X and Y coordinates (relative to the JMapViewer object)
+				xCoord = arg0.getX();
+				yCoord = arg0.getY();
+				realPosition = new Position(eventOriginator.getPosition(xCoord,yCoord));
+				//Prompt the user whether they really want to move
+				move = JOptionPane.showConfirmDialog(eventOriginator.getRootPane(),
+						"Move to " + realPosition.toString() + "?\n" +
+								"Distance: " + 
+								String.format("%.0f",realPosition.getDistanceTo(rover.currentPosition)*1000) +
+								"m",
+								"Confirm Move", 
+								JOptionPane.YES_NO_OPTION);
+				if (move == JOptionPane.YES_OPTION) {
+					rover.moveToPosition(realPosition);
+					rover.atTargetPosition = false;
+				}
 			}
-		}
-
+		};
 	}
 
 	@Override
