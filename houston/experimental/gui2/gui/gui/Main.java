@@ -222,7 +222,7 @@ public class Main {
 		updater = Executors.newScheduledThreadPool(1);
 		updater.scheduleAtFixedRate(roverUpdater, 0, 100, TimeUnit.MILLISECONDS);
 		JPanel panel_3 = new JPanel();
-		panel_3.setBackground(Color.WHITE);
+		//panel_3.setBackground(Color.WHITE);
 		springLayout.putConstraint(SpringLayout.NORTH, panel_3, 10, SpringLayout.SOUTH, map_2);
 		springLayout.putConstraint(SpringLayout.WEST, panel_3, 10, SpringLayout.EAST, panel_1);
 		springLayout.putConstraint(SpringLayout.SOUTH, panel_3, -10, SpringLayout.SOUTH, frame.getContentPane());
@@ -281,7 +281,7 @@ public class Main {
 		sl_panel_3.putConstraint(SpringLayout.SOUTH, scrollPane, 0, SpringLayout.NORTH, panel_4);
 		sl_panel_3.putConstraint(SpringLayout.EAST, scrollPane, 0, SpringLayout.EAST, panel_3);
 		panel_3.add(scrollPane);
-		panel_2d.setBackground(Color.WHITE);
+		//panel_2d.setBackground(Color.WHITE);
 		frame.getContentPane().add(panel_2d);
 		
 		JLabel lblDebugControls = new JLabel("Debug Controls:");
@@ -319,8 +319,10 @@ public class Main {
 		JPanel panel_2e = new JPanel();
 		springLayout.putConstraint(SpringLayout.NORTH, panel_2e, 0, SpringLayout.SOUTH, panel_2d);
 		springLayout.putConstraint(SpringLayout.WEST, panel_2e, 10, SpringLayout.EAST, panel);
+		//springLayout.putConstraint(SpringLayout.EAST, panel_2e, 10, SpringLayout.WEST, panel_3);
+
 		springLayout.putConstraint(SpringLayout.SOUTH, panel_2e, 33, SpringLayout.SOUTH, panel_2d);
-		panel_2e.setBackground(Color.WHITE);
+		//panel_2e.setBackground(Color.WHITE);
 		frame.getContentPane().add(panel_2e);
 		JLabel lblNetwork = new JLabel("Network:");
 		panel_2e.add(lblNetwork);
@@ -384,6 +386,19 @@ public class Main {
 				}
 			}
 		});
+		JPanel panel_2f = new JPanel();
+		springLayout.putConstraint(SpringLayout.NORTH, panel_2f, 0, SpringLayout.SOUTH, panel_2e);
+		springLayout.putConstraint(SpringLayout.WEST, panel_2f, 10, SpringLayout.EAST, panel);
+		springLayout.putConstraint(SpringLayout.SOUTH, panel_2f, 33, SpringLayout.SOUTH, panel_2e);		
+		frame.getContentPane().add(panel_2f);
+		JButton btnSettings = new JButton("Settings");
+		btnSettings.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SettingsWindow s = new SettingsWindow();
+			}
+		});
+		panel_2f.add(btnSettings);
 		panel_1.updateImage();
 		frame.toFront();
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
