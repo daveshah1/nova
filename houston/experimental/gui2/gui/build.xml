@@ -19,6 +19,7 @@
     <target name="jar" depends="compile" description="create a Jar file for the application">
         <jar destfile="nova.jar">
             <fileset dir="classes" includes="**/*.class"/>
+			<zipgroupfileset dir="/var/jar" includes="*.jar" />
             <manifest>
                 <attribute name="Main-Class" value="gui.Main"/>
             </manifest>
