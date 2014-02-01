@@ -35,7 +35,7 @@ public class Main {
 
 	private JFrame frame;
     private CustomMap map_2;
-    
+    private SettingsStore settings;
     private NetworkRover rover;
     private ScheduledExecutorService updater;
     @SuppressWarnings("unused")
@@ -70,7 +70,8 @@ public class Main {
 	 * Initialise the contents of the frame.
 	 */
 	private void initialize() {
-	
+		settings = new SettingsStore();
+		
 		frame = new JFrame();
 		frame.setBounds(0,0,1280,739);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -332,7 +333,7 @@ public class Main {
 		btnNetworkStart.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				rover.begin("127.0.0.1");
+				rover.begin(settings.get("rover.ip"));
 			}
 		});
 		JButton btnNetworkTest = new JButton("Test");

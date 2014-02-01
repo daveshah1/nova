@@ -20,6 +20,7 @@ public class CustomMap extends JMapViewer implements RoverUpdateListener, Landin
 	private static final long serialVersionUID = 4892531410795284424L;
 	Rover rover;
 	MapMarkerDot actualPos, targetPos, modulePos;
+	SettingsStore settings = new SettingsStore();
 	public CustomMap(Rover r) {
 		super();
 		this.rover = r;
@@ -31,7 +32,7 @@ public class CustomMap extends JMapViewer implements RoverUpdateListener, Landin
 			setTileSource(new OfflineOsmTileSource("file:///" + System.getProperty("user.home").replace("\\","/") + "/mapcache/",14,18));
 
 		}
-		setDisplayPositionByLatLon(51.487556,-0.2381855, 16);
+		setDisplayPositionByLatLon(settings.getDouble("home.lat"),settings.getDouble("home.long"), 16);
 	}
 	@Override
 	public void positionUpdated(Position newPosition, Position targetPosition, boolean atTargetPosition,

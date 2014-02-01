@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 public class NetworkImageViewer extends JPanel {
 	private static final long serialVersionUID = -5555045450327984237L;
+	private SettingsStore settings = new SettingsStore();
 	private BufferedImage image = null;
 	//private boolean running = false;
 	public NetworkImageViewer() {
@@ -38,7 +39,7 @@ public class NetworkImageViewer extends JPanel {
 	public void updateImage() {
 		BufferedImage downloadedImage;
 		try {
-			downloadedImage = ImageIO.read(new URL("file:///Users/David/board.jpg"));
+			downloadedImage = ImageIO.read(new URL("http://" + settings.get("rover.ip") + "/image.png"));
 				image = downloadedImage;
 				//Redraw new image
 				super.repaint(); 

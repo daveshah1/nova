@@ -17,8 +17,10 @@ import gnu.io.CommPortIdentifier;
 
 public class SettingsWindow extends JFrame {
 	private static final long serialVersionUID = 8536169689704756762L;
+	private SettingsStore settings;
 	SettingsWindow() {
 		super();
+		settings  =new SettingsStore();
 		setTitle("Nova - Settings");
 		setSize(500, 250);
 		SpringLayout springLayout = new SpringLayout();
@@ -27,7 +29,7 @@ public class SettingsWindow extends JFrame {
 		springLayout.putConstraint(SpringLayout.NORTH, lblRoverIP, 10, SpringLayout.NORTH, this);
 		springLayout.putConstraint(SpringLayout.WEST, lblRoverIP, 5, SpringLayout.WEST, this);
 		this.add(lblRoverIP);
-		JTextField txtRoverIP = new JTextField("0.0.0.0");
+		final JTextField txtRoverIP = new JTextField(settings.get("rover.ip"));
 		springLayout.putConstraint(SpringLayout.NORTH, txtRoverIP, 10, SpringLayout.NORTH, this);
 		springLayout.putConstraint(SpringLayout.WEST, txtRoverIP, 0, SpringLayout.EAST, lblRoverIP);
 		springLayout.putConstraint(SpringLayout.EAST, txtRoverIP, 200, SpringLayout.EAST, lblRoverIP);
@@ -49,12 +51,21 @@ public class SettingsWindow extends JFrame {
 		final JComboBox<String> serialPortList = new JComboBox<String>();
 		@SuppressWarnings("rawtypes")
 		Enumeration portList = CommPortIdentifier.getPortIdentifiers();
-
+		boolean foundPort = false;
 	    while (portList.hasMoreElements()) {
 	        CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
 	        if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 	            serialPortList.addItem(portId.getName());
+	            if(portId.getName().equals(settings.get("serial.port"))) {
+	            	foundPort = true;
+	            	serialPortList.setSelectedItem(portId.getName());
+	            }
 	        }
+	    }
+	    
+	    if(!foundPort) {
+	    	serialPortList.addItem(settings.get("serial.port") + " (unavailable)");
+	    	serialPortList.setSelectedIndex(serialPortList.getItemCount()-1);
 	    }
 	    
 		springLayout.putConstraint(SpringLayout.NORTH, serialPortList, 10, SpringLayout.NORTH, separator1);
@@ -88,7 +99,7 @@ public class SettingsWindow extends JFrame {
 		springLayout.putConstraint(SpringLayout.WEST, lblBaudRate, 5, SpringLayout.WEST, this);
 		this.add(lblBaudRate);
 		
-		JTextField txtBaudRate = new JTextField("115200");
+		final JTextField txtBaudRate = new JTextField(settings.get("serial.baud"));
 		springLayout.putConstraint(SpringLayout.NORTH, txtBaudRate, 10, SpringLayout.SOUTH, serialPortList);
 		springLayout.putConstraint(SpringLayout.WEST, txtBaudRate, 5, SpringLayout.EAST, lblBaudRate);
 		springLayout.putConstraint(SpringLayout.EAST, txtBaudRate, 95, SpringLayout.EAST, lblBaudRate);
@@ -113,7 +124,7 @@ public class SettingsWindow extends JFrame {
 		springLayout.putConstraint(SpringLayout.WEST, lblHomeLat, 5, SpringLayout.WEST, this);
 		this.add(lblHomeLat);
 		
-		JTextField txtHomeLat = new JTextField("51.00000");
+		final JTextField txtHomeLat = new JTextField(settings.get("home.lat"));
 		springLayout.putConstraint(SpringLayout.NORTH, txtHomeLat, 5, SpringLayout.SOUTH, lblHomeLocation);
 		springLayout.putConstraint(SpringLayout.WEST, txtHomeLat, 5, SpringLayout.EAST, lblHomeLat);
 		springLayout.putConstraint(SpringLayout.EAST, txtHomeLat, 95, SpringLayout.EAST, lblHomeLat);
@@ -125,18 +136,47 @@ public class SettingsWindow extends JFrame {
 		springLayout.putConstraint(SpringLayout.WEST, lblHomeLong, 10, SpringLayout.EAST, txtHomeLat);
 		this.add(lblHomeLong);
 		
-		JTextField txtHomeLong = new JTextField("0.00000");
+		final JTextField txtHomeLong = new JTextField(settings.get("home.long"));
 		springLayout.putConstraint(SpringLayout.NORTH, txtHomeLong, 5, SpringLayout.SOUTH, lblHomeLocation);
 		springLayout.putConstraint(SpringLayout.WEST, txtHomeLong, 5, SpringLayout.EAST, lblHomeLong);
 		springLayout.putConstraint(SpringLayout.EAST, txtHomeLong, 95, SpringLayout.EAST, lblHomeLong);
 
 		this.add(txtHomeLong);
 		
+		JLabel lblHomeAlt = new JLabel("Alt: ");
+		springLayout.putConstraint(SpringLayout.NORTH, lblHomeAlt, 5, SpringLayout.SOUTH, lblHomeLocation);
+		springLayout.putConstraint(SpringLayout.WEST, lblHomeAlt, 10, SpringLayout.EAST, txtHomeLong);
+		this.add(lblHomeAlt);
+		
+		final JTextField txtHomeAlt = new JTextField(settings.get("home.alt"));
+		springLayout.putConstraint(SpringLayout.NORTH, txtHomeAlt, 5, SpringLayout.SOUTH, lblHomeLocation);
+		springLayout.putConstraint(SpringLayout.WEST, txtHomeAlt, 5, SpringLayout.EAST, lblHomeAlt);
+		springLayout.putConstraint(SpringLayout.EAST, txtHomeAlt, 95, SpringLayout.EAST, lblHomeAlt);
+
+		this.add(txtHomeAlt);
+		
 		JButton btnSaveExit = new JButton("Save & Exit");
 		springLayout.putConstraint(SpringLayout.SOUTH, btnSaveExit, -5, SpringLayout.SOUTH, this.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, btnSaveExit, 5, SpringLayout.WEST, this);		
 		setVisible(true);
-		
+		btnSaveExit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				settings.set("rover.ip",txtRoverIP.getText().trim());
+				String port = serialPortList.getSelectedItem().toString();
+				if(port.endsWith("(unavailable)")) {
+					port = port.replaceFirst("\\(unavailable\\)", "").trim();
+				}
+				settings.set("serial.port",port);
+				settings.set("serial.baud",txtBaudRate.getText().trim());
+				settings.set("home.lat",txtHomeLat.getText().trim());
+				settings.set("home.long",txtHomeLong.getText().trim());
+				settings.set("home.alt",txtHomeAlt.getText().trim());
+				settings.save();
+				dispatchEvent(new WindowEvent(SettingsWindow.this, WindowEvent.WINDOW_CLOSING));
+
+			}
+		});
 		this.add(btnSaveExit);
 		
 		JButton btnCancel = new JButton("Cancel");
@@ -152,5 +192,7 @@ public class SettingsWindow extends JFrame {
 		setVisible(true);
 		
 		this.add(btnCancel);
+		
+		
 	}
 }

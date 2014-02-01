@@ -5,7 +5,7 @@ import javax.swing.JOptionPane;
 public class NetworkRover extends Rover {
 	private NetworkSender network;
 	private boolean online = false;
-	
+
 	enum MoveOperation {
 		FORWARDS,
 		BACKWARDS,
