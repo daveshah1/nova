@@ -112,7 +112,7 @@ public class Main {
 		springLayout.putConstraint(SpringLayout.WEST, horizontalStrut, 0, SpringLayout.EAST, panel);
 		frame.getContentPane().add(horizontalStrut);
 		
-		NetworkImageViewer panel_1 = new NetworkImageViewer();
+		final NetworkImageViewer panel_1 = new NetworkImageViewer();
 		panel_1.setToolTipText("Video Here");
 		panel_1.setBackground(Color.WHITE);
 		springLayout.putConstraint(SpringLayout.NORTH, panel_1, 0, SpringLayout.NORTH, panel);
@@ -334,6 +334,7 @@ public class Main {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				rover.begin(settings.get("rover.ip"));
+				panel_1.startDisplay();
 			}
 		});
 		JButton btnNetworkTest = new JButton("Test");
@@ -356,6 +357,7 @@ public class Main {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				rover.disconnect();
+				panel_1.stopDisplay();
 			}
 		});
 		
