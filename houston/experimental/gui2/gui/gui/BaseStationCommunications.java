@@ -22,6 +22,7 @@ public class BaseStationCommunications {
 	private SerialPort serialPort;
 	private BufferedReader serialPortReader;
 	private PrintWriter serialPortWriter;
+	private boolean busy = false;
 	public BaseStationCommunications() {
 		// TODO Auto-generated constructor stub
 	}
@@ -38,6 +39,7 @@ public class BaseStationCommunications {
 			serialPort.setSerialPortParams(57600,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
 			serialPortReader = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
 			serialPortWriter = new PrintWriter(new OutputStreamWriter(serialPort.getOutputStream()));
+			busy = false;
 		} catch (NoSuchPortException e) {
 			return false;
 		} catch (PortInUseException e) {
@@ -51,38 +53,69 @@ public class BaseStationCommunications {
 		return true;
 	}
 	
+	private boolean waitForFreePort() {
+		long startWaitTime = System.currentTimeMillis();
+		while(busy) {
+			if((System.currentTimeMillis() - startWaitTime) > 5000) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	//Close the serial port
 	public void stopCommunications() {
+		if(!waitForFreePort())
+			return false;
+		busy = false;
 		serialPort.close();
 	}
 	
 	//True = OK
 	//False = Error
-	//Sets WiFi antenna pan (left/right) servo angle
+	//Sets WiFi antenna target bearing
 	public boolean setAntennaPan(int theta) {
+		if(!waitForFreePort())
+			return false;
+		busy = true;
 		serialPortWriter.println("A P " + theta);
+		busy = false;
 		return true;
 	}
 	
 	//True = OK
 	//False = Error
-	//Sets WiFi antenna tilt (up/down) servo angle
-	public boolean setAntennaTilt(double theta) {
+	//Sets WiFi antenna target tilt (up/down) angle
+	public boolean setAntennaTilt(int theta) {
+		if(!waitForFreePort())
+			return false;
+		busy = true;
 		serialPortWriter.println("A T " + theta);
+		busy = false;
 		return true;
 	}
 	
 	public String getAvailableRadioData() {
-		serialPortWriter.println("R R");
-		try {
-			return serialPortReader.readLine();
-		} catch (IOException e) {
+		if(!waitForFreePort())
 			return "";
+		busy = true;
+		serialPortWriter.println("R R");
+		String s;
+		try {
+			s = serialPortReader.readLine();
+		} catch (IOException e) {
+			s = "";
 		}
+		busy = false;
+		return s;
 	}
 	
 	public boolean sendRadio(String data) {
+		if(!waitForFreePort())
+			return false;
+		busy = true;
 		serialPortWriter.println("R W " + data);
+		busy = false;
 		return false;
 	}
 }

@@ -5,7 +5,7 @@ import javax.swing.JOptionPane;
 public class NetworkRover extends Rover {
 	private NetworkSender network;
 	private boolean online = false;
-
+	private boolean busy = false;
 	enum MoveOperation {
 		FORWARDS,
 		BACKWARDS,
@@ -18,6 +18,7 @@ public class NetworkRover extends Rover {
 	}
 	
 	boolean begin(String hostname) {
+		busy = false;
 		network = new NetworkSender(hostname);
 		if(testNetwork() == NetworkStatus.OK) {
 			//Initialise video stream
@@ -39,22 +40,46 @@ public class NetworkRover extends Rover {
 	
 	void disconnect() {
 		online = false;
+		busy = false;
 		//Stop video stream
 		//Any other closing down stuff
 	}
 	
+	private void waitForFreeNetwork() throws NetworkException {
+		long startWaitTime = System.currentTimeMillis();
+		while(busy) {
+			if((System.currentTimeMillis() - startWaitTime) > 5000) {
+				throw new NetworkException(NetworkStatus.TIMEOUT);
+			}
+		}
+	}
+	
 	public void moveToPosition(Position p) {
 		if(online) {
+			try {
+				waitForFreeNetwork();
+			} catch (NetworkException e) {
+				return;
+			}
+			busy = true;
 			targetPosition = p;
 			atTargetPosition = false;
 			NetworkCommand cmd = new NetworkCommand("GT",p.getLat() + " "  + p.getLon());
 			NetworkStatus status = network.sendCommand(cmd).getStatus();
+			busy = false;
 			switch(status) {
 			case OK:
 				break;
 			case COMMUNICATION_ERROR:
 				//Try once more
+				try {
+					waitForFreeNetwork();
+				} catch (NetworkException e) {
+					break;
+				}
+				busy = true;
 				NetworkStatus newStatus = network.sendCommand(cmd).getStatus();
+				busy = false;
 				if(newStatus == NetworkStatus.OK) break;
 				//Otherwise drop into error handling
 			default:
@@ -63,19 +88,26 @@ public class NetworkRover extends Rover {
 				JOptionPane.showMessageDialog(null,"Network error: " + status.toString());
 				break;
 			}
+			busy = false;
 		};
 	}
 	
 	public Position getPosition() throws NetworkException {
 		if(online) {
+			waitForFreeNetwork();
+			busy = true;
 			NetworkCommand cmd = new NetworkCommand("CL");
 			NetworkResponse response = network.sendCommand(cmd);
+			busy = false;
 			switch(response.getStatus()) {
 			case OK:
 				break;
 			case COMMUNICATION_ERROR:
 				//Try once more
+				waitForFreeNetwork();
+				busy = true;
 				NetworkStatus newStatus = network.sendCommand(cmd).getStatus();
+				busy = false;
 				if(newStatus == NetworkStatus.OK) break;
 				//Otherwise drop into error handling
 			default:
@@ -94,6 +126,7 @@ public class NetworkRover extends Rover {
 				throw new NetworkException(NetworkStatus.RESPONSE_INVALID,"Position string returned: " + response.getPayload());
 			}
 		} else {
+			
 			throw new NetworkException(NetworkStatus.ROVER_OFFLINE);
 		}
 	}
@@ -134,15 +167,30 @@ public class NetworkRover extends Rover {
 				opcode = "R";
 				break;
 			}
-	
+			try {
+				waitForFreeNetwork();
+			} catch(NetworkException e) {
+				throwError("Couldn't move - error: timeout");
+				return;
+			}
+			busy = true;
 			NetworkCommand cmd = new NetworkCommand("MV",opcode);
 			NetworkStatus status = network.sendCommand(cmd).getStatus();
+			busy = false;
 			switch(status) {
 			case OK:
 				break;
 			case COMMUNICATION_ERROR:
 				//Try once more
+				try {
+					waitForFreeNetwork();
+				} catch(NetworkException e) {
+					throwError("Couldn't move - error: timeout");
+					return;
+				}
+				busy = true;
 				NetworkStatus newStatus = network.sendCommand(cmd).getStatus();
+				busy = false;
 				if(newStatus == NetworkStatus.OK) break;
 				//Otherwise drop into error handling
 			default:
@@ -156,14 +204,30 @@ public class NetworkRover extends Rover {
 	
 	public void stopRover() {
 		if(online) {
+			try {
+				waitForFreeNetwork();
+			} catch(NetworkException e) {
+				throwError("Couldn't stop - error: timeout");
+				return;
+			}
+			busy = true;
 			NetworkCommand cmd = new NetworkCommand("ST");
 			NetworkStatus status = network.sendCommand(cmd).getStatus();
+			busy = false;
 			switch(status) {
 			case OK:
 				break;
 			case COMMUNICATION_ERROR:
 				//Try once more
+				try {
+					waitForFreeNetwork();
+				} catch(NetworkException e) {
+					throwError("Couldn't stop - error: timeout");
+					return;
+				}
+				busy = true;
 				NetworkStatus newStatus = network.sendCommand(cmd).getStatus();
+				busy = false;
 				if(newStatus == NetworkStatus.OK) break;
 				//Otherwise drop into error handling
 			default:
@@ -177,14 +241,20 @@ public class NetworkRover extends Rover {
 	
 	public TPData getTP() throws NetworkException {
 		if(online) {
+			waitForFreeNetwork();
+			busy = true;
 			NetworkCommand cmd = new NetworkCommand("TP");
 			NetworkResponse response = network.sendCommand(cmd);
+			busy = false;
 			switch(response.getStatus()) {
 			case OK:
 				break;
 			case COMMUNICATION_ERROR:
 				//Try once more
+				waitForFreeNetwork();
+				busy = true;
 				NetworkStatus newStatus = network.sendCommand(cmd).getStatus();
+				busy = false;
 				if(newStatus == NetworkStatus.OK) break;
 				//Otherwise drop into error handling
 			default:
