@@ -65,8 +65,7 @@ public class BaseStationCommunications {
 	
 	//Close the serial port
 	public void stopCommunications() {
-		if(!waitForFreePort())
-			return false;
+		waitForFreePort();
 		busy = false;
 		serialPort.close();
 	}
