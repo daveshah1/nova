@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.Calendar;
 
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
@@ -49,7 +50,7 @@ public class BaseStationCommunications {
 		} catch (IOException e) {
 			return false;
 		}
-		
+		serialPortWriter.println("C S");
 		return true;
 	}
 	
@@ -66,6 +67,7 @@ public class BaseStationCommunications {
 	//Close the serial port
 	public void stopCommunications() {
 		waitForFreePort();
+		serialPortWriter.println("C E");
 		busy = false;
 		serialPort.close();
 	}
@@ -115,6 +117,19 @@ public class BaseStationCommunications {
 		busy = true;
 		serialPortWriter.println("R W " + data);
 		busy = false;
-		return false;
+		return true;
 	}
+	
+	public boolean sendStatus(boolean roverOnline, boolean landingModuleOnline) {
+		Calendar now = Calendar.getInstance();
+		if(!waitForFreePort())
+			return false;
+		busy = true;
+		int roverStatus = 0, landingModuleStatus = 0;
+		if(roverOnline) roverStatus = 1;
+		if(landingModuleOnline) landingModuleStatus = 1;
+		serialPortWriter.println("S " + roverStatus + " " + landingModuleStatus + " " + now.get(Calendar.HOUR) + " " + now.get(Calendar.MINUTE));
+		busy = false;
+		return false;
+	};
 }

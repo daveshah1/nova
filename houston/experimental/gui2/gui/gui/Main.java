@@ -398,6 +398,7 @@ public class Main {
 		btnSettings.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				@SuppressWarnings("unused")
 				SettingsWindow s = new SettingsWindow();
 			}
 		});
