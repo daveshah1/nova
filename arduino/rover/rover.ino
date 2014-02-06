@@ -1,4 +1,5 @@
 #include "Wire.h"
+#include "E2PROM.h"
 #include "MPL3115A2.h"
 #include "SerialPacket.h"
 #include "board.h"

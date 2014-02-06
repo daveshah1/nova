@@ -1,4 +1,5 @@
-#include "Wire.h";
+#include "Wire.h"
+
 /*EEPROM definitions
 Devices split up into 'blocks' of 8 bytes
 Device 0, block 0:
@@ -32,7 +33,6 @@ private:
 
 public:
 	E2PROM(); //Constructor
-	bool check_status(); //Check devices are online
 	void begin_logging(); //Initialise and insert 'page break'
 	void write_next_page(unsigned char *data); //Write 7 bytes of data + checksum
 	void write_page(unsigned int page, unsigned char *data); //Write an arbitrary page
@@ -41,4 +41,6 @@ public:
 	bool read_next_page(unsigned char *buffer); //Read next page (sequential reads). True=ok, False=error
 	bool is_end(); //True if end of EEPROM
 	unsigned int get_page_to_write(); //Get current page to write to
+	void update_header(); //Save write pointer to device 0 header
+	void format(); //Reset device 0 header
 };
