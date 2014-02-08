@@ -5,7 +5,8 @@
 #include "board.h"
 SerialPacket  sp;
 MPL3115A2     tp;
-
+E2PROM ee;
+int lastMillis;
 void errorBeep(const short data[]) {
 	int length = data[0];
 	for(int i = 1;i<length;i++) {
@@ -69,6 +70,8 @@ void setup() {
 	Wire.begin();
 	sp.begin(9600);
 	tp.begin();
+        delay(100);
+        ee.begin_logging();
 	pinMode(STAT_LED,OUTPUT);
 	pinMode(LNK_RDY,OUTPUT);
 
@@ -80,9 +83,12 @@ void setup() {
 	digitalWrite(STAT_LED,HIGH);
 	//Power On Self Test
 	runTests();
+        lastMillis = millis();
 };
 
 void loop() {
+        int temp  = tp.readTemp()*10;
+        unsigned long pressure = tp.readPressure();
 	if(sp.isPacketAvailable()) {
 		char cmd[3];
 		sp.getCommand(cmd);
@@ -90,7 +96,7 @@ void loop() {
 			char buffer[32];
 			//Serial.println(temp);
 			//Serial.println(pressure);
-			snprintf(buffer,32,"%d %ld",(int)tp.readTemp()*10,(long)tp.readPressure());
+			snprintf(buffer,32,"%d %ld",temp,pressure);
 			sp.sendReply("OK",buffer);
 		} else if(strncmp(cmd,"MT",2)==0) { //Motor control
 			char params[64];
@@ -137,12 +143,45 @@ void loop() {
 			} else {
 				sp.sendReply("PE","");
 			};
+                } else if(strncmp(cmd,"RD",2)==0) { //Dump EEPROM
+                        ee.begin_read();
+                        unsigned  char tmppage[7];
+                        while(!ee.is_end()) {
+                          ee.read_next_page(tmppage);
+                          if((tmppage[0] == 0x50) && (tmppage[1] == 0x41) && (tmppage[2] == 0x47) && (tmppage[3] == 0x45) && (tmppage[4] == 0x00) && (tmppage[5] == 0x00) &&  (tmppage[6] == 0x00)) {
+                            Serial.println("--BREAK--");
+                          } else {
+                            Serial.print((unsigned long)((unsigned long)tmppage[0] * 65536) + (unsigned long)(tmppage[1] * 256) + tmppage[2]);
+                            Serial.print(",");
+                            Serial.print(((int)tmppage[3] << 8) | (int)tmppage[4]);
+                            Serial.print(",");
+                            Serial.println(((int)tmppage[5] << 8) | (int)tmppage[6]);
+                          };
+                        };  
+                } else if(strncmp(cmd,"FT",2)==0) { //Format EEPROM (!!!)
+                        ee.format();
+                        sp.sendReply("OK","");                
 		} else if(strncmp(cmd,"PI",2)==0) {
 			sp.sendReply("OK","");
 		} else { //Unknown command, return error status.
 			sp.sendReply("CE","");
 		};
 	}
+        unsigned char eepage[7];
+        
+        unsigned int deltat = millis() - lastMillis;
+        if(deltat > 2000) {
+          eepage[0] = (pressure >> 16) & 0xFF;
+          eepage[1] = (pressure >> 8) & 0xFF;
+          eepage[2] = (pressure) & 0xFF;
+          eepage[3] = (temp >> 8) & 0xFF;
+          eepage[4] = (temp) & 0xFF;
+          eepage[5] = (deltat >> 8) & 0xFF;
+          eepage[6] = (deltat) & 0xFF;
+          ee.write_next_page(eepage);
+          ee.update_header();
+          lastMillis = millis();
+        };
 	digitalWrite(STAT_LED,LOW); //Pulse LED as a 'heartbeat' indicator.
 	delay(150);
 	digitalWrite(STAT_LED,HIGH);

@@ -1,5 +1,5 @@
 #include "Wire.h"
-
+#include <Arduino.h>
 /*EEPROM definitions
 Devices split up into 'blocks' of 8 bytes
 Device 0, block 0:

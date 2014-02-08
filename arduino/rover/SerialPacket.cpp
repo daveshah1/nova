@@ -25,8 +25,8 @@ bool SerialPacket::isPacketAvailable() {
 	char cByte;
 	while(Serial.available() > 0) {
 		cByte = Serial.read();
-		Serial.print("Read byte: ");
-		Serial.println(cByte);
+		//Serial.print("Read byte: ");
+		//Serial.println(cByte);
 		if (startCounter < 3) {
 			if (cByte == startBytes[startCounter]) {
 				startCounter++;
