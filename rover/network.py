@@ -7,7 +7,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
     def handle(self):
         # self.request is the TCP socket connected to the client
         self.data = self.request.recv(1024).strip()
-        print "{} wrote:".format(self.client_address[0])
+        print "{0} wrote:".format(self.client_address[0])
         print self.data
         # just send back the same data, but upper-cased
         if(self.data[3:5] == "PI"):        
@@ -52,7 +52,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
             self.request.sendall("RP NC")
 
 def main():
-    HOST, PORT = "0.0.0.0", 3141
+    HOST, PORT = "192.168.1.39", 3141
     server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
 
     arduino.begin() #Open communications with Arduino

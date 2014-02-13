@@ -20,9 +20,10 @@ public class NetworkRover extends Rover {
 	boolean begin(String hostname) {
 		busy = false;
 		network = new NetworkSender(hostname);
+		online = true;
+		System.err.println(testNetwork().toString());
 		if(testNetwork() == NetworkStatus.OK) {
 			//Initialise video stream
-			online = true;
 			return true;
 		} else {
 			disconnect();
@@ -41,6 +42,7 @@ public class NetworkRover extends Rover {
 	void disconnect() {
 		online = false;
 		busy = false;
+		network = null;
 		//Stop video stream
 		//Any other closing down stuff
 	}
@@ -49,6 +51,8 @@ public class NetworkRover extends Rover {
 		long startWaitTime = System.currentTimeMillis();
 		while(busy) {
 			if((System.currentTimeMillis() - startWaitTime) > 5000) {
+				System.err.println("---");
+
 				throw new NetworkException(NetworkStatus.TIMEOUT);
 			}
 		}

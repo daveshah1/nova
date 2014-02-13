@@ -168,8 +168,9 @@ public class Main {
 		btnStop.setForeground(Color.WHITE);
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				rover.targetPosition = new Position(rover.currentPosition);
-				rover.atTargetPosition = true;
+				/*rover.targetPosition = new Position(rover.currentPosition);
+				rover.atTargetPosition = true;*/
+				rover.stopRover();
 			}
 		});		
 		panel_2b.add(btnStop);
@@ -221,7 +222,7 @@ public class Main {
 	
 		//Schedule automated updating of the simulated rover.
 		updater = Executors.newScheduledThreadPool(1);
-		updater.scheduleAtFixedRate(roverUpdater, 0, 100, TimeUnit.MILLISECONDS);
+		updater.scheduleAtFixedRate(roverUpdater, 0, 1000, TimeUnit.MILLISECONDS);
 		JPanel panel_3 = new JPanel();
 		//panel_3.setBackground(Color.WHITE);
 		springLayout.putConstraint(SpringLayout.NORTH, panel_3, 10, SpringLayout.SOUTH, map_2);

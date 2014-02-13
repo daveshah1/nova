@@ -63,7 +63,7 @@ def stop():
 def begin():
     global arduinoPort
     #Arduino is on UART1
-    arduinoPort = serial.Serial("/dev/ttyS0",57600,timeout=3)
+    arduinoPort = serial.Serial("/dev/ttyS0",9600,timeout=3)
     #Make sure Arduino and port is ready
     time.sleep(0.5)
     #Ping Arduino
