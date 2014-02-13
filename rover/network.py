@@ -3,13 +3,6 @@ import arduino
 from threading import Timer
 
 class MyTCPHandler(SocketServer.BaseRequestHandler):
-    """
-    The RequestHandler class for our server.
-
-    It is instantiated once per connection to the server, and must
-    override the handle() method to implement communication to the
-    client.
-    """
 
     def handle(self):
         # self.request is the TCP socket connected to the client
@@ -20,6 +13,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         if(self.data[3:5] == "PI"):        
             self.request.sendall("RP OK\n")
         elif(self.data[3:5] == "CL"):
+			#GPS code here, one day...
             self.request.sendall("RP OK 51.487556 -0.2381855")
         elif(self.data[3:5] == "MV"):
 			if(len(self.data) < 7):
@@ -28,12 +22,12 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 				if(self.data[6] == "F"):
 					status = arduino.motorCtl("F","F")
 				elif(self.data[6] == "L"):
-					status = arduino.motorCtl("B","F")
-					t = Timer(1,lambda : arduino.motorCtl("S","S"))
+					status = arduino.motorCtl("B","F") 
+					t = Timer(1,lambda : arduino.motorCtl("S","S")) #After turning for 1s, stop
 					t.start()
 				elif(self.data[6] == "R"):
 					status = arduino.motorCtl("F","B")
-					t = Timer(1,lambda : arduino.motorCtl("S","S"))
+					t = Timer(1,lambda : arduino.motorCtl("S","S")) #After turning for 1s, stop
 					t.start()		
 				elif(self.data[6] == "B"):
 					status = arduino.motorCtl("B","B")
@@ -58,12 +52,10 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
             self.request.sendall("RP NC")
 
 def main():
-    HOST, PORT = "localhost", 3141
-    # Create the server, binding to localhost on port 9999
+    HOST, PORT = "0.0.0.0", 3141
     server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
-    # Activate the server; this will keep running until you
-    # interrupt the program with Ctrl-C
-    arduino.begin()
-    server.serve_forever()
+
+    arduino.begin() #Open communications with Arduino
+    server.serve_forever() #Start listening for requests.
 if __name__ == "__main__":
 	main()
