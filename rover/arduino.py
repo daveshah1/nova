@@ -3,7 +3,7 @@
 import serial
 import time
 arduinoPort = None
-
+busy = False
 STATUS_OK = 1
 STATUS_OFFLINE = 2
 STATUS_CMD_ERROR = 3
@@ -15,12 +15,19 @@ class CommandResponse:
     def __init__(self,status,data):
         self.status = status
         self.data = data
+    
 
 def sendRequest(command,data):
-    global arduinoPort
+    global arduinoPort, busy
     try:
+        start_time = time.time()
+        while(busy):
+            if((time.time() - start_time()) > 2):
+                return CommandResponse(STATUS_COMMS_ERROR,"")
+        busy = True
         arduinoPort.write("HI " + command + " " + data + "\n")
         response = arduinoPort.readline()
+        busy = False
         if(len(response) < 5):
             return CommandResponse(STATUS_COMMS_ERROR)
         if(len(response) < 7):
@@ -41,6 +48,7 @@ def sendRequest(command,data):
         else:
             return CommandResponse(STATUS_COMMS_ERROR,data)
     except:
+        busy = False
         return CommandResponse(STATUS_COMMS_ERROR,"")
         
 def testComms():

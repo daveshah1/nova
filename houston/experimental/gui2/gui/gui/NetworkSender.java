@@ -18,7 +18,7 @@ public class NetworkSender {
 	private boolean connect() {
 		try {
 			disconnect();
-			roverSocket = new Socket(roverHostname,3141);
+			roverSocket = new Socket(roverHostname,9001);
 			roverSocket.setSoTimeout(2500);
 			out = new PrintWriter(roverSocket.getOutputStream(),true);
 			in = new BufferedReader(new InputStreamReader(roverSocket.getInputStream()));
