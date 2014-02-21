@@ -62,7 +62,7 @@ public class Position {
 		    double sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma;
 		    cosSqAlpha = 1 - sinAlpha*sinAlpha;
 		    cos2SigmaM = cosSigma - 2*sinU1*sinU2/cosSqAlpha;
-		    if ((cos2SigmaM) == Double.NaN) cos2SigmaM = 0;  // equatorial line: cosSqAlpha=0 (§6)
+		    if ((cos2SigmaM) == Double.NaN) cos2SigmaM = 0;  // equatorial line: cosSqAlpha=0
 		    double C = f/16*cosSqAlpha*(4+f*(4-3*cosSqAlpha));
 		    lambdaP = lambda;
 		    lambda = L + (1-C) * f * sinAlpha *
@@ -81,7 +81,7 @@ public class Position {
 	}
 	
 	public double getBearingTo(Position p) {
-		  double a = 6378137, b = 6356752.314245,  f = 1/298.257223563;  // WGS-84 ellipsoid params
+		  double  f = 1/298.257223563;  // WGS-84 ellipsoid params
 		  double L = Math.toRadians((p.longitude-longitude));
 		  double U1 = Math.atan((1-f) * Math.tan(Math.toRadians(latitude)));
 		  double U2 = Math.atan((1-f) * Math.tan(Math.toRadians(p.latitude)));
@@ -100,7 +100,7 @@ public class Position {
 		    double sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma;
 		    cosSqAlpha = 1 - sinAlpha*sinAlpha;
 		    cos2SigmaM = cosSigma - 2*sinU1*sinU2/cosSqAlpha;
-		    if ((cos2SigmaM) == Double.NaN) cos2SigmaM = 0;  // equatorial line: cosSqAlpha=0 (§6)
+		    if ((cos2SigmaM) == Double.NaN) cos2SigmaM = 0;  // equatorial line: cosSqAlpha=0
 		    double C = f/16*cosSqAlpha*(4+f*(4-3*cosSqAlpha));
 		    lambdaP = lambda;
 		    lambda = L + (1-C) * f * sinAlpha *
