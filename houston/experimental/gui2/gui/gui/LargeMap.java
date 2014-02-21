@@ -1,7 +1,11 @@
 package gui;
 
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
@@ -21,7 +25,8 @@ public class LargeMap extends JFrame implements WindowStateListener {
 	CustomMap map_2;
 	Rover rover;
 	JLabel lblPosition;
-
+	Position relativeDatumPoint = null;
+	Position lastMousePosition = null;
 	LargeMap(Rover r, Position centre, int zoomLevel) {
 		super();
 		setTitle("Map");
@@ -66,11 +71,20 @@ public class LargeMap extends JFrame implements WindowStateListener {
 			public void mouseMoved(MouseEvent arg0) {
 				int xCoord = arg0.getX();
 				int yCoord = arg0.getY();
-				Position mapPosition = new Position(map_2.getPosition(xCoord,
+				lastMousePosition = new Position(map_2.getPosition(xCoord,
 						yCoord));
-				lblPosition.setText(String.format(
-						"Latitude: %.5f, Longitude: %.5f",
-						mapPosition.getLat(), mapPosition.getLon()));
+				if(relativeDatumPoint == null) {
+					lblPosition.setText(String.format(
+							"Lat: %.5f, Long: %.5f",
+							lastMousePosition.getLat(), lastMousePosition.getLon()));
+				} else {
+					lblPosition.setText(String.format(
+							"Lat: %.5f, Long: %.5f, Rel: %.1fm, %.1f",
+							lastMousePosition.getLat(), lastMousePosition.getLon(),
+							relativeDatumPoint.getDistanceTo(lastMousePosition),
+							relativeDatumPoint.getBearingTo(lastMousePosition)));
+				}
+				
 			}
 
 			@Override
@@ -79,7 +93,23 @@ public class LargeMap extends JFrame implements WindowStateListener {
 
 			}
 		});
-
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+		      @Override
+		      public boolean dispatchKeyEvent(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_S) {
+					if(lastMousePosition != null) {
+						relativeDatumPoint = lastMousePosition;
+						lblPosition.setText(String.format(
+								"Lat: %.5f, Long: %.5f, Rel: %.1fm, %.1f",
+								lastMousePosition.getLat(), lastMousePosition.getLon(),
+								relativeDatumPoint.getDistanceTo(lastMousePosition),
+								relativeDatumPoint.getBearingTo(lastMousePosition)));
+					}
+				}
+				return true;
+				
+			}
+		});
 		springLayout.putConstraint(SpringLayout.NORTH, btnGoto, 10,
 				SpringLayout.NORTH, this.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, btnGoto, 10,
@@ -101,8 +131,7 @@ public class LargeMap extends JFrame implements WindowStateListener {
 		getContentPane().add(map_2);
 
 		setVisible(true);
-		this.rover = r;
-
+		this.rover =r;
 	}
 
 	@Override
