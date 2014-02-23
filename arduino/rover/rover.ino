@@ -80,6 +80,9 @@ void setup() {
 	pinMode(M2A_CTL,OUTPUT);
 	pinMode(M2B_CTL,OUTPUT);
 	
+        pinMode(POD_MISO,INPUT_PULLUP);
+        
+  
 	digitalWrite(STAT_LED,HIGH);
 	//Power On Self Test
 	runTests();
@@ -160,7 +163,13 @@ void loop() {
                         };  
                 } else if(strncmp(cmd,"FT",2)==0) { //Format EEPROM (!!!)
                         ee.format();
-                        sp.sendReply("OK","");                
+                        sp.sendReply("OK","");     
+               } else if(strncmp(cmd,"LK",2)==0) { //Poll deployment status
+                        if(digitalRead(POD_MISO)==LOW) {
+                          sp.sendReply("OK","D");
+                        } else {
+                          sp.sendReply("OK","N");
+                        };             
 		} else if(strncmp(cmd,"PI",2)==0) {
 			sp.sendReply("OK","");
 		} else { //Unknown command, return error status.
