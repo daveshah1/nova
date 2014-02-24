@@ -20,6 +20,7 @@ turnCoefficientRight = turnCoefficientRightDefault
 #Used for autocal
 timeLastTurn = 0
 directionLastTurn = 0
+angleLastTurn = 0
 
 #Current estimated rover direction (as a bearing from North)
 estimatedRoverDirection = 0
@@ -42,7 +43,7 @@ targetLon = 0
 
 #Are we navigating?
 automaticNavigation = False
-
+lastTurnAutomatic = False
 def approx_Equal(x, y, tolerance=0.001):
     return abs(x-y) <= 0.5 * tolerance * (x + y)
 
@@ -94,21 +95,28 @@ def update():
         distanceTravelled, currentBearing = distBearing(refLon,refLat,currentLon,currentLat)
         if(distanceTravelled > 7):
             arduino.motorCtl("S","S")
-            delta = currentBearing - estimatedRoverDirection 
+			if(directionLastTurn == 0):
+                delta = currentBearing - estimatedRoverDirection 
+			else:
+			    delta = estimatedRoverDirection - currentBearing
             estimatedRoverDirection = bearing
-            if(directionValidityStatus >= 1):
+            if((directionValidityStatus >= 1) and lastTurnAutomatic ):
                 lastTurnCoefficient = (abs(delta) / 90) / timeLastTurn
                 if(directionLastTurn == 0):
                     turnCoefficientLeft = (turnCoefficientLeft * 10 + lastTurnCoefficient) / 11
                 else:
                     turnCoefficientRight = (turnCoefficientRight * 10 + lastTurnCoefficient) / 11
-                #Sync turn coefficients to file
+                with open('/home/root/turncal', 'w') as f:
+				    f.write(str(turnCoefficientLeft) + "," + str(turnCoefficientRight) + "\n")
             directionValidityStatus = 1
             amountToTurn = currentBearing - bearing
             if(abs(amountToTurn) > 10):
                 directionValidityStatus = 2
+			    lastTurnAutomatic = True
                 if(amountToTurn > 0):
                     timeToTurn = (amountToTurn / 90) * turnCoefficientLeft
+					angleLastTurn = amountToTurn
+					directionLastTurn = 0
                     estimatedRoverDirection -= amountToTurn
                     estimatedRoverDirection = (estimatedRoverDirection + 360) % 360
                     arduino.motorCtl("B","F")
@@ -116,6 +124,8 @@ def update():
                     arduino.motorCtl("S","S")
                 else:
                     timeToTurn = (abs(amountToTurn) / 90) * turnCoefficientRight
+					angleLastTurn = amountToTurn
+					directionLastTurn = 1
                     estimatedRoverDirection += amountToTurn
                     estimatedRoverDirection = (estimatedRoverDirection + 360) % 360
                     arduino.motorCtl("F","B")
@@ -124,3 +134,41 @@ def update():
             refLon = currentLon
             refLat = currentLat
         arduino.motorCtl("F","F")
+		
+def manualTurn(direction, angle):
+    automaticNavigation = False
+	lastTurnAutomatic = False
+	if(direction == 0):
+        timeToTurn = (abs(angle) / 90) * turnCoefficientLeft
+        estimatedRoverDirection -= angle
+        estimatedRoverDirection = (estimatedRoverDirection + 360) % 360
+        arduino.motorCtl("B","F")
+        time.sleep(timeToTurn / 1000)
+        arduino.motorCtl("S","S")	 
+    else:
+        timeToTurn = (abs(angle) / 90) * turnCoefficientLeft
+        estimatedRoverDirection += amountToTurn
+        estimatedRoverDirection = (estimatedRoverDirection + 360) % 360
+        arduino.motorCtl("F","B")
+        time.sleep(timeToTurn / 1000)
+        arduino.motorCtl("S","S")
+
+def manualStop():
+    automaticNavigation = False
+    arduino.motorCtl("S","S")
+
+def manualForward():
+    automaticNavigation = False
+    arduino.motorCtl("F","F")
+
+def manualBackward():
+    automaticNavigation = False
+    arduino.motorCtl("B","B")    	
+	
+def navigateAutomatically(lat,lon):
+    refLat = datahandler.latestLat
+    refLon = datahandler.latestLon
+	targetLat = lat
+	targetLon = lon
+	automaticNavigation = True
+	
