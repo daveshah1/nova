@@ -87,7 +87,7 @@ void setup() {
     if (!myFile.open(filename, O_RDWR | O_CREAT | O_AT_END)) {
       sd.errorHalt("#Opening file for write failed");
     }
-    myFile.println("time,t,p"); 
+    myFile.println("time,t,p,gps,lat,lon,alt,ax,ay,az,gx,gy,gz"); 
     myFile.close();
 }
 long t = 0;
@@ -119,7 +119,15 @@ void loop() {
       Serial.print(",");
       Serial.print(TEMP);
       Serial.print(",");
-      Serial.println(P);
+      Serial.print(P);
+      Serial.print(",");
+      Serial.print(gpsAvailable);
+      Serial.print(",");
+      Serial.print(latitude);
+      Serial.print(",");
+      Serial.print(longitude);
+      Serial.print(",");
+      Serial.println(gpsAlt);
       if (!myFile.open(filename, O_RDWR | O_CREAT | O_AT_END)) {
         sd.errorHalt("#Opening file for write failed");
       }
@@ -127,7 +135,27 @@ void loop() {
       myFile.print(",");
       myFile.print(TEMP);
       myFile.print(",");
-      myFile.println(P);
+      myFile.print(P);
+      myFile.print(",");
+      myFile.print(gpsAvailable);
+      myFile.print(",");
+      myFile.print(latitude);
+      myFile.print(",");
+      myFile.print(longitude);
+      myFile.print(",");
+      myFile.print(gpsAlt);
+      myFile.print(",");
+      myFile.print(ax);      
+      myFile.print(",");
+      myFile.print(ay);   
+      myFile.print(",");
+      myFile.print(az);
+      myFile.print(",");
+      myFile.print(gx);      
+      myFile.print(",");
+      myFile.print(gy);   
+      myFile.print(",");
+      myFile.println(gz);      
       myFile.close();
      // delay(100);
       digitalWrite(28,LOW);
@@ -137,6 +165,7 @@ void loop() {
       *bufferPosition = Serial1.read();
       if(*bufferPosition == '\n') {
         *(++bufferPosition) = '\0';
+        Serial.println(serialBuffer);
         parseNMEA();
         bufferPosition = serialBuffer;
       } else {
@@ -209,14 +238,22 @@ float relativisePressure(long Pr) {
 void parseNMEA() {
   char splitstr[18][15];
   int currentPoint = 0;
-  char *part;
   //Only parse position updates
   if(strncmp(serialBuffer,"$GPGGA",6)==0) {
     //Disassemble NMEA sentence
-    part = strtok(serialBuffer,",");
-    while(part != NULL) {
-      strncpy(splitstr[currentPoint],part,15);
-      part = strtok(NULL,",");
+    int index = 0, index2 = 0;
+    char currentChar  = serialBuffer[0];
+    while(currentChar != '\0') {
+      if((currentChar == ',') || (index2 > 14)) {
+        splitstr[currentPoint][index2] = '\0';
+        currentPoint++;
+        index2 = 0;
+      } else {
+        splitstr[currentPoint][index2] = currentChar;
+        index2++;
+      };
+      index++;
+      currentChar = serialBuffer[index];
     };
     gpshr = chrToInt(splitstr[1][0]) * 10 + chrToInt(splitstr[1][1]);
     gpsmin = chrToInt(splitstr[1][2]) * 10 + chrToInt(splitstr[1][3]);
@@ -237,7 +274,7 @@ void parseNMEA() {
     };
     
     gpsAlt = atof(splitstr[9]);
-    
+    Serial.println(splitstr[7]);
     if(chrToInt(splitstr[6][0])>0) {
      gpsAvailable = true;
     } else {
