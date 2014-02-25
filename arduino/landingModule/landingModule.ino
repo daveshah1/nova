@@ -46,9 +46,24 @@ MPU6050 accelgyro;
 
 int16_t ax, ay, az;
 int16_t gx, gy, gz;
-
+bool gpsAvailable = false;
 double latitude = 0, longitude = 0, gpsAlt = 0;
 int gpshr = 0, gpsmin = 0, gpssec = 0;
+
+enum deployment_state {
+  WAITING,
+  LAUNCHING,
+  LAUNCHED,
+  LANDING,
+  LANDED,
+  READY_TO_DEPLOY,
+  DEPLOYING,
+  DEPLOYED,
+  CANCELLED
+};
+
+deployment_state currentState = WAITING;
+
 void setup() {
     pinMode(28,OUTPUT);  
     Wire.begin();
@@ -79,6 +94,10 @@ long t = 0;
 char serialBuffer[500] = {0};
 char *bufferPosition = serialBuffer;
 long nullPressure = -1;
+
+float altitudeStateStore = 0;
+long timeStateStore = 0;
+
 void loop() {
     if((millis() - t) > 300) {
       digitalWrite(28,HIGH);
@@ -124,11 +143,67 @@ void loop() {
         bufferPosition++;
       };
     };
-    
+    switch(currentState) {
+     case WAITING:
+        if(relativisePressure(P) > 50) {
+          currentState = LAUNCHING;
+          timeStateStore = millis();
+          altitudeStateStore = relativisePressure(P);
+        };
+        break;
+     case LAUNCHING:
+        if((millis() - timeStateStore) > 10000) {
+          if(abs(altitudeStateStore - relativisePressure(P)) < 5) {
+            currentState = LAUNCHED;
+          };
+          if((altitudeStateStore - relativisePressure(P)) > 25) {
+            currentState = LANDING;
+          };
+          altitudeStateStore = relativisePressure(P);
+          timeStateStore = millis();
+        };
+        break;
+     case LAUNCHED:
+        if((altitudeStateStore - relativisePressure(P)) > 50) {
+           currentState = LANDING;
+           altitudeStateStore = relativisePressure(P);
+           timeStateStore = millis();
+        };
+        break;
+      case LANDING:
+        if((millis() - timeStateStore) > 30000) {
+          if(abs(altitudeStateStore - relativisePressure(P)) < 5) {
+            currentState = LANDED;
+          };
+          altitudeStateStore = relativisePressure(P);
+          timeStateStore = millis();
+        };
+        break;
+      case LANDED:
+        if((millis() - timeStateStore) > 30000) {
+          currentState = READY_TO_DEPLOY;
+        };
+        break;
+      case READY_TO_DEPLOY:
+        if((millis() - timeStateStore) > 90000) {
+          currentState = DEPLOYING;
+        };
+        break;
+      case DEPLOYING:
+        //Motor and microswitch stuff
+        break;
+    }
 };
 
 inline int chrToInt(char c) {
  return c - '0'; 
+}
+//Convert pressure to relative altitude
+float relativisePressure(long Pr) {
+  float altitude;
+  if(nullPressure == -1) return 0;
+  altitude = 44330 * (1.0 - pow(Pr / nullPressure,0.1903));
+  return altitude;
 }
 
 void parseNMEA() {
@@ -140,27 +215,35 @@ void parseNMEA() {
     //Disassemble NMEA sentence
     part = strtok(serialBuffer,",");
     while(part != NULL) {
-      strncpy(splitStr[currentPoint],part,15);
+      strncpy(splitstr[currentPoint],part,15);
       part = strtok(NULL,",");
     };
-    gpshr = chrToInt(splitstr[1][0]) * 10 + chrToInt(splitStr[1][1]);
-    gpsmin = chrToInt(splitstr[1][2]) * 10 + chrToInt(splitStr[1][3]);
-    gpssec = chrToInt(splitstr[1][4]) * 10 + chrToInt(splitStr[1][5]);
-    int latDegrees = chrToInt(splitstr[2][0]) * 10 + chrToInt(splitStr[2][1]);
-    float latMinutes = chrToInt(splitStr[2][2]) * 10.0 + chrToInt(splitStr[2][3]) * 1.0 + chrToInt(splitStr[2][4]) * 0.1 +  chrToInt(splitStr[2][6]) * 0.01 + chrToInt(splitStr[2][7]) * 0.001 +  chrToInt(splitStr[2][8]) * 0.0001;
+    gpshr = chrToInt(splitstr[1][0]) * 10 + chrToInt(splitstr[1][1]);
+    gpsmin = chrToInt(splitstr[1][2]) * 10 + chrToInt(splitstr[1][3]);
+    gpssec = chrToInt(splitstr[1][4]) * 10 + chrToInt(splitstr[1][5]);
+    int latDegrees = chrToInt(splitstr[2][0]) * 10 + chrToInt(splitstr[2][1]);
+    float latMinutes = chrToInt(splitstr[2][2]) * 10.0 + chrToInt(splitstr[2][3]) * 1.0 + chrToInt(splitstr[2][4]) * 0.1 +  chrToInt(splitstr[2][6]) * 0.01 + chrToInt(splitstr[2][7]) * 0.001 +  chrToInt(splitstr[2][8]) * 0.0001;
     latitude = latDegrees + (latMinutes / 60.0);
     
-    if(splitStr[3][0]=='S') {
+    if(splitstr[3][0]=='S') {
       latitude = -latitude;
     };
     
-    int lonDegrees = chrToInt(splitstr[4][0]) * 10 + chrToInt(splitStr[4][1]);
-    float lonMinutes = chrToInt(splitStr[4][2]) * 10.0 + chrToInt(splitStr[4][3]) * 1.0 + chrToInt(splitStr[4][4]) * 0.1 +  chrToInt(splitStr[4][6]) * 0.01 + chrToInt(splitStr[4][7]) * 0.001 +  chrToInt(splitStr[4][8]) * 0.0001;
+    int lonDegrees = chrToInt(splitstr[4][0]) * 10 + chrToInt(splitstr[4][1]);
+    float lonMinutes = chrToInt(splitstr[4][2]) * 10.0 + chrToInt(splitstr[4][3]) * 1.0 + chrToInt(splitstr[4][4]) * 0.1 +  chrToInt(splitstr[4][6]) * 0.01 + chrToInt(splitstr[4][7]) * 0.001 +  chrToInt(splitstr[4][8]) * 0.0001;
     longitude = lonDegrees + (lonMinutes / 60.0);    
-    if(splitStr[5][0]=='W') {
+    if(splitstr[5][0]=='W') {
       longitude = -longitude;
     };
-  };
+    
+    gpsAlt = atof(splitstr[9]);
+    
+    if(chrToInt(splitstr[6][0])>0) {
+     gpsAvailable = true;
+    } else {
+     gpsAvailable = false;
+    }
+    };
 };
 
 long getVal(int address, byte code)
