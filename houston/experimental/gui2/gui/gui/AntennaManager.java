@@ -4,16 +4,24 @@ import gui.LandingModule.DeploymentStatus;
 
 public class AntennaManager implements RoverUpdateListener,
 		LandingModuleListener {
-	boolean havePositionFix = false;
-	Position currentTrackingPosition = null;
-	boolean trackingRover = false;
+	private boolean havePositionFix = false;
+	private Position currentTrackingPosition = null;
+	private boolean trackingRover = false;
+	private double currentTrackingAltitude = 0;
+	private SettingsStore settings;
 	public AntennaManager() {
-		// TODO Auto-generated constructor stub
+		settings = new SettingsStore();
 	}
 
 	@Override
 	public void positionUpdated(Position newPosition, LandingModule m) {
-		// TODO Auto-generated method stub
+		if(!trackingRover) {
+			if(m.gpsAvailable) {
+				currentTrackingPosition = newPosition;
+				currentTrackingAltitude = (int) m.gpsAltitude;
+				havePositionFix = true;
+			}
+		}
 
 	}
 
@@ -26,14 +34,21 @@ public class AntennaManager implements RoverUpdateListener,
 	@Override
 	public void statusUpdated(DeploymentStatus deployed, boolean connected,
 			LandingModule m) {
-		// TODO Auto-generated method stub
+		if(deployed == DeploymentStatus.DEPLOYED ) {
+			trackingRover = true;
+		}
 
 	}
 
 	@Override
 	public void positionUpdated(Position newPosition, Position targetPosition,
 			boolean atTargetPosition, Rover r) {
-		// TODO Auto-generated method stub
+		if(trackingRover) {
+			if(newPosition.getLat() != 0) {
+				currentTrackingPosition = newPosition;
+				havePositionFix = true;
+			}
+		}
 
 	}
 
@@ -54,5 +69,16 @@ public class AntennaManager implements RoverUpdateListener,
 		// TODO Auto-generated method stub
 
 	}
-
+	
+	public void updateAntennaPosition(BaseStationCommunications b) {
+		if(havePositionFix) {
+			Position home = new Position(settings.getDouble("home.lat"),
+					settings.getDouble("home.long"));
+			double homeAlt = settings.getDouble("home.alt");
+			double horizontalDistance = home.getDistanceTo(currentTrackingPosition);
+			double horizontalAngle = home.getBearingTo(currentTrackingPosition);
+			double verticalAngle = Math.toDegrees(Math.atan((currentTrackingAltitude - homeAlt) / horizontalDistance));
+			b.setAntennaTilt((int)verticalAngle, (int)horizontalAngle);
+		}
+	}
 }

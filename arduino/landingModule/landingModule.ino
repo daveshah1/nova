@@ -139,9 +139,8 @@ void loop() {
       accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
       
       digitalWrite(AUX,HIGH);
-      delay(200);
-      Serial.print(t);
-      Serial.print(",");
+      delay(20);
+      Serial.print("START")
       Serial.print(TEMP);
       Serial.print(",");
       Serial.print(P);
@@ -152,7 +151,10 @@ void loop() {
       Serial.print(",");
       Serial.print(longitude,8);
       Serial.print(",");
-      Serial.println(gpsAlt);
+      Serial.print(gpsAlt);
+      Serial.print(",");
+      Serial.print(currentState);
+      Serial.println("END");
       delay(10);
      // digitalWrite(AUX,LOW);
       if (!myFile.open(filename, O_RDWR | O_CREAT | O_AT_END)) {

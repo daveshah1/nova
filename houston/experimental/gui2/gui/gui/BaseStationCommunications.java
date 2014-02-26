@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.Calendar;
 
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
@@ -50,7 +49,7 @@ public class BaseStationCommunications {
 		} catch (IOException e) {
 			return false;
 		}
-		serialPortWriter.println("C S");
+		//serialPortWriter.println("C S");
 		return true;
 	}
 	
@@ -67,31 +66,18 @@ public class BaseStationCommunications {
 	//Close the serial port
 	public void stopCommunications() {
 		waitForFreePort();
-		serialPortWriter.println("C E");
+		//serialPortWriter.println("C E");
 		busy = false;
 		serialPort.close();
 	}
-	
 	//True = OK
 	//False = Error
-	//Sets WiFi antenna target bearing
-	public boolean setAntennaPan(int theta) {
+	//Sets WiFi antenna target tilt (up/down) angle and pan (left/right) angle
+	public boolean setAntennaTilt(int tilt, int pan) {
 		if(!waitForFreePort())
 			return false;
 		busy = true;
-		serialPortWriter.println("A P " + theta);
-		busy = false;
-		return true;
-	}
-	
-	//True = OK
-	//False = Error
-	//Sets WiFi antenna target tilt (up/down) angle
-	public boolean setAntennaTilt(int theta) {
-		if(!waitForFreePort())
-			return false;
-		busy = true;
-		serialPortWriter.println("A T " + theta);
+		serialPortWriter.println("A " + pan + " " + tilt);
 		busy = false;
 		return true;
 	}
@@ -100,7 +86,7 @@ public class BaseStationCommunications {
 		if(!waitForFreePort())
 			return "";
 		busy = true;
-		serialPortWriter.println("R R");
+		serialPortWriter.println("R");
 		String s;
 		try {
 			s = serialPortReader.readLine();
@@ -115,21 +101,10 @@ public class BaseStationCommunications {
 		if(!waitForFreePort())
 			return false;
 		busy = true;
-		serialPortWriter.println("R W " + data);
+		serialPortWriter.println("W " + data);
 		busy = false;
 		return true;
 	}
 	
-	public boolean sendStatus(boolean roverOnline, boolean landingModuleOnline) {
-		Calendar now = Calendar.getInstance();
-		if(!waitForFreePort())
-			return false;
-		busy = true;
-		int roverStatus = 0, landingModuleStatus = 0;
-		if(roverOnline) roverStatus = 1;
-		if(landingModuleOnline) landingModuleStatus = 1;
-		serialPortWriter.println("S " + roverStatus + " " + landingModuleStatus + " " + now.get(Calendar.HOUR) + " " + now.get(Calendar.MINUTE));
-		busy = false;
-		return false;
-	};
+	
 }

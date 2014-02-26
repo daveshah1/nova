@@ -3,6 +3,7 @@
 #include <Adafruit_GFX.h>
 #include <SPI.h>
 #include <Wire.h>
+#include <strings.h>
 #include "lcd.h"
 
 /*--PIN DEFINITIONS--*/
@@ -14,6 +15,8 @@
 #define SET 16
 #define AUX 17
 /*-------------------*/
+
+int tol = 2; //Antenna position tolerance
 
 LSM303 compass;
 Adafruit_ST7735 tft = Adafruit_ST7735(cs, dc, rst);
@@ -106,6 +109,98 @@ void setup() {
   drawSplash("OFFLINE");
 };
 
+char radioBuffer[1024];
+char *endOfBuffer = radioBuffer;
+char commandBuffer[80];
+char *endOfCommandBuffer = commandBuffer;
+long timeLastUpdate = 0;
+
+int angleV, angleH;
+
+/*
+*0: offline
+*1: no data
+*2: tracking
+*/
+int state = 0, lastState = 0;
+
 void loop() {
-  //Code here...
+  //Check for available data on RF interface
+  while(Serial1.available() > 0) {
+    if(state == 0) {
+      state = 1;
+    };
+    *endOfBuffer = Serial1.read();
+    endOfBuffer++;
+    //Wrap around in event of buffer overflow
+    if(endOfBuffer == radioBuffer+1024) {
+      endOfBuffer = radioBuffer;
+    };
+  };
+  //Check for available data on PC interface
+
+  while(Serial.available() > 0) {
+    
+    *endOfCommandBuffer = Serial.read();
+    endOfCommandBuffer++;
+    if(*(endOfCommandBuffer-1) == '\n') {
+      *endOfCommandBuffer = '\0';
+      //Handle serial command
+      if(strncmp(commandBuffer,"A",1) == 0) { //Set antenna position
+        char *part1 = strtok(commandBuffer+2," ");
+        char *part2 = strtok(NULL," ");
+        angleH = atoi(part1);
+        angleV = atoi(part2);
+        state = 2;
+      }
+      else if(strncmp(commandBuffer,"R",1) == 0) { //Read out radio buffer
+        for(char *c=radioBuffer;c<endOfBuffer;c++) {
+          Serial.write(c);
+        };
+        Serial.println();
+        endOfBuffer = radioBuffer;
+      }
+      else if(strncmp(commandBuffer,"W",1) == 0) { //Transmit data over radio
+        digitalWrite(AUX,HIGH);
+        delay(2);
+        Serial1.print(commandBuffer+2);
+        delay(2);
+        digitalWrite(AUX,LOW);
+      };
+      endOfCommandBuffer = commandBuffer;
+    };
+    //Wrap around in event of buffer overflow
+    if(endOfCommandBuffer == commandBuffer+80) {
+      endOfCommandBuffer = commandBuffer;
+    };
+  };
+  
+  if((millis() - timeLastUpdate) > 750) {
+    //Update display if appropriate
+    timeLastUpdate = millis();
+    lastState = state;
+    if((state == 1) && (lastState == 0)) {
+      drawSplash("NO DATA");
+    };
+    if(state == 2) {
+      int currentH = (int)overSampleHeading();
+      int currentV = 0; //TODO: accelerometer read
+      bool up = false, down = false, left = false, right = false;
+      tft.fillScreen(ST7735_WHITE);
+      if((currentH - angleH) > tol) {
+        left = true;
+      };
+      if((currentH - angleH) < -tol) {
+        right = true;
+      };
+      
+      if((currentV - angleV) > tol) {
+        down = true;
+      };
+      if((currentV - angleV) < -tol) {
+        up = true;
+      };
+      drawArrows(up,down,left,right,ST7735_RED);
+    };
+  };
 };

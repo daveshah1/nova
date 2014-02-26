@@ -4,7 +4,7 @@ import java.util.Vector;
 
 /*
  * Radio sentence format
- * BdataE
+ * STARTdataEND
  * data: temp,pressure,gpsAvailable,lat,long,alt,deployed (comma separated)
  * e.g. sentence: B175,100000,1,51.487556,-0.2381855,100,1E
  * temp: temperature in degrees C * 10
@@ -13,7 +13,7 @@ import java.util.Vector;
  * lat: GPS latitude
  * long: GPS longitude
  * alt: GPS (not barometric) altitude
- * deployed: 1 if rover deployed, 0 if not
+ * state: 7 if rover deployed, ? if not
  */
 
 public class LandingModule {
@@ -28,6 +28,7 @@ public class LandingModule {
 	public boolean connected = false, running = false, gpsAvailable = false;
 	String radioBuffer = "";
 	private BaseStationCommunications baseStation;
+	public double gpsAltitude = 0;
 	public void attachListener(LandingModuleListener l) {
 		listeners.add(l);
 	};
@@ -57,13 +58,13 @@ public class LandingModule {
 			 String newData = baseStation.getAvailableRadioData();
 			 radioBuffer += newData;
 			 while(true) {
-				 int endOfSentence = radioBuffer.indexOf("E");
+				 int endOfSentence = radioBuffer.indexOf("END") + 2;
 				 if(endOfSentence == -1) break; //No full packet remaining, stop
 				 String sentence = radioBuffer.substring(0,endOfSentence); //Split at ending delimiter
 				 radioBuffer = radioBuffer.substring(endOfSentence+1); //Put remainder back into buffer
-				 if(!sentence.startsWith("B")) continue; //Not a full sentence, discard
+				 if(!sentence.startsWith("START")) continue; //Not a full sentence, discard
 				 //Trim starting letter
-				 sentence = sentence.substring(1);
+				 sentence = sentence.substring(5);
 				 String splitSentence[] = sentence.split(",");
 				 if(splitSentence.length < 7) continue;
 				 currentData.temperature = Double.parseDouble(splitSentence[0]) / 10;
@@ -72,9 +73,14 @@ public class LandingModule {
 				 if(gpsAvailable) {
 					 currentPosition = new Position( Double.parseDouble(splitSentence[3]), 
 							 Double.parseDouble(splitSentence[4]));
+					 gpsAltitude = Double.parseDouble(splitSentence[5]);
 				 }
 				 packetRecieved = true;
-
+				 if(Integer.parseInt(splitSentence[6]) == 7) {
+					 roverDeployed = DeploymentStatus.DEPLOYED;
+				 } else {
+					 roverDeployed = DeploymentStatus.LOADED;
+				 }
 			 }
 			 if(packetRecieved) {
 				 firePositionUpdate();
