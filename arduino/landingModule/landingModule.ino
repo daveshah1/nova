@@ -64,31 +64,55 @@ enum deployment_state {
 
 deployment_state currentState = WAITING;
 
+#define AUX 20
+#define SET 27
+bool useSD = false;
 void setup() {
+    
     pinMode(28,OUTPUT);  
+    pinMode(AUX, OUTPUT);
+    pinMode(SET, OUTPUT);
     Wire.begin();
     Serial.begin(9600);
     Serial1.begin(9600);
+    digitalWrite(SET,HIGH);
     delay(100);
+    digitalWrite(SET,LOW);
+    /*
+    434.2 MHz (434200)
+    RF 19200 baud (4)
+    20mW output power (9)
+    UART 9600 baud (3)
+    No parity (0)
+    */
+    delay(2);
+    Serial.println("WR_434200_4_9_3_0");
+    delay(200);
+    digitalWrite(SET,HIGH);
+    delay(200);
     Serial.println("#Initialising I2C devices");
     initial(ADDRESS);
     accelgyro.initialize();
     Serial.println("#Initialised I2C devices");
     
     Serial.println("#Initialising uSD");
-    if (!sd.begin(chipSelect, SPI_HALF_SPEED)) sd.initErrorHalt();
-    Serial.println("#Initialised uSD");
-    for(int i = 0;i<999;i++) {
-      snprintf(filename,14,"log%03d.csv",i);
-      if(!sd.exists(filename)) break;
-    };
-    Serial.print("#Writing to ");
-    Serial.println(filename);
-    if (!myFile.open(filename, O_RDWR | O_CREAT | O_AT_END)) {
-      sd.errorHalt("#Opening file for write failed");
+    if (!sd.begin(chipSelect, SPI_HALF_SPEED)) {
+         useSD = false;
+        Serial.println("---SD ERROR---");
+    } else {
+      Serial.println("#Initialised uSD");
+      for(int i = 0;i<999;i++) {
+        snprintf(filename,14,"log%03d.csv",i);
+        if(!sd.exists(filename)) break;
+      };
+      Serial.print("#Writing to ");
+      Serial.println(filename);
+      if (!myFile.open(filename, O_RDWR | O_CREAT | O_AT_END)) {
+        sd.errorHalt("#Opening file for write failed");
+      }
+      myFile.println("time,t,p,gps,lat,lon,alt,ax,ay,az,gx,gy,gz"); 
+      myFile.close();
     }
-    myFile.println("time,t,p,gps,lat,lon,alt,ax,ay,az,gx,gy,gz"); 
-    myFile.close();
 }
 long t = 0;
 char serialBuffer[500] = {0};
@@ -114,7 +138,8 @@ void loop() {
       
       accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
       
-      
+      digitalWrite(AUX,HIGH);
+      delay(200);
       Serial.print(t);
       Serial.print(",");
       Serial.print(TEMP);
@@ -123,40 +148,45 @@ void loop() {
       Serial.print(",");
       Serial.print(gpsAvailable);
       Serial.print(",");
-      Serial.print(latitude);
+      Serial.print(latitude,8);
       Serial.print(",");
-      Serial.print(longitude);
+      Serial.print(longitude,8);
       Serial.print(",");
       Serial.println(gpsAlt);
+      delay(10);
+     // digitalWrite(AUX,LOW);
       if (!myFile.open(filename, O_RDWR | O_CREAT | O_AT_END)) {
-        sd.errorHalt("#Opening file for write failed");
-      }
-      myFile.print(t);
-      myFile.print(",");
-      myFile.print(TEMP);
-      myFile.print(",");
-      myFile.print(P);
-      myFile.print(",");
-      myFile.print(gpsAvailable);
-      myFile.print(",");
-      myFile.print(latitude);
-      myFile.print(",");
-      myFile.print(longitude);
-      myFile.print(",");
-      myFile.print(gpsAlt);
-      myFile.print(",");
-      myFile.print(ax);      
-      myFile.print(",");
-      myFile.print(ay);   
-      myFile.print(",");
-      myFile.print(az);
-      myFile.print(",");
-      myFile.print(gx);      
-      myFile.print(",");
-      myFile.print(gy);   
-      myFile.print(",");
-      myFile.println(gz);      
-      myFile.close();
+        //sd.errorHalt("#Opening file for write failed");
+        useSD = false;
+        Serial.println("---SD ERROR---");
+      } else {
+        myFile.print(t);
+        myFile.print(",");
+        myFile.print(TEMP);
+        myFile.print(",");
+        myFile.print(P);
+        myFile.print(",");
+        myFile.print(gpsAvailable);
+        myFile.print(",");
+        myFile.print(latitude,8);
+        myFile.print(",");
+        myFile.print(longitude,8);
+        myFile.print(",");
+        myFile.print(gpsAlt);
+        myFile.print(",");
+        myFile.print(ax);      
+        myFile.print(",");
+        myFile.print(ay);   
+        myFile.print(",");
+        myFile.print(az);
+        myFile.print(",");
+        myFile.print(gx);      
+        myFile.print(",");
+        myFile.print(gy);   
+        myFile.print(",");
+        myFile.println(gz);      
+        myFile.close();
+      };
      // delay(100);
       digitalWrite(28,LOW);
     //  delay(400);
@@ -259,15 +289,15 @@ void parseNMEA() {
     gpsmin = chrToInt(splitstr[1][2]) * 10 + chrToInt(splitstr[1][3]);
     gpssec = chrToInt(splitstr[1][4]) * 10 + chrToInt(splitstr[1][5]);
     int latDegrees = chrToInt(splitstr[2][0]) * 10 + chrToInt(splitstr[2][1]);
-    float latMinutes = chrToInt(splitstr[2][2]) * 10.0 + chrToInt(splitstr[2][3]) * 1.0 + chrToInt(splitstr[2][4]) * 0.1 +  chrToInt(splitstr[2][6]) * 0.01 + chrToInt(splitstr[2][7]) * 0.001 +  chrToInt(splitstr[2][8]) * 0.0001;
+    float latMinutes = chrToInt(splitstr[2][2]) * 10.0 + chrToInt(splitstr[2][3]) * 1.0 + chrToInt(splitstr[2][5]) * 0.1 +  chrToInt(splitstr[2][6]) * 0.01 + chrToInt(splitstr[2][7]) * 0.001 +  chrToInt(splitstr[2][8]) * 0.0001;
     latitude = latDegrees + (latMinutes / 60.0);
     
     if(splitstr[3][0]=='S') {
       latitude = -latitude;
     };
     
-    int lonDegrees = chrToInt(splitstr[4][0]) * 10 + chrToInt(splitstr[4][1]);
-    float lonMinutes = chrToInt(splitstr[4][2]) * 10.0 + chrToInt(splitstr[4][3]) * 1.0 + chrToInt(splitstr[4][4]) * 0.1 +  chrToInt(splitstr[4][6]) * 0.01 + chrToInt(splitstr[4][7]) * 0.001 +  chrToInt(splitstr[4][8]) * 0.0001;
+    int lonDegrees = chrToInt(splitstr[4][0]) * 100 + chrToInt(splitstr[4][1]) * 10 + chrToInt(splitstr[4][2]);
+    float lonMinutes = chrToInt(splitstr[4][3]) * 10.0 + chrToInt(splitstr[4][4]) * 1.0 + chrToInt(splitstr[4][6]) * 0.1 +  chrToInt(splitstr[4][7]) * 0.01 + chrToInt(splitstr[4][8]) * 0.001 +  chrToInt(splitstr[4][9]) * 0.0001;
     longitude = lonDegrees + (lonMinutes / 60.0);    
     if(splitstr[5][0]=='W') {
       longitude = -longitude;
