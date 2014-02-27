@@ -1,28 +1,21 @@
 package gui;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-
-import gnu.io.CommPort;
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.UnsupportedCommOperationException;
-
 
 /*
  * This class is designed to provide an interface to the Arduino on the base station
  * which is responsible for radio communications and antenna positioning.
  */
 public class BaseStationCommunications {
-	private SerialPort serialPort;
-	private BufferedReader serialPortReader;
-	private PrintWriter serialPortWriter;
+
 	private boolean busy = false;
+	Process p;
+	BufferedWriter out;
+	BufferedReader in;
 	public BaseStationCommunications() {
 		// TODO Auto-generated constructor stub
 	}
@@ -31,23 +24,17 @@ public class BaseStationCommunications {
 	//False = Error
 	//Open the serial port
 	public boolean startCommunications(String port) {
-		CommPortIdentifier portIdentifier;
 		try {
-			portIdentifier = CommPortIdentifier.getPortIdentifier(port);
-			CommPort commPort = portIdentifier.open("novaController",500);
-			serialPort = (SerialPort) commPort;
-			serialPort.setSerialPortParams(57600,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
-			serialPortReader = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
-			serialPortWriter = new PrintWriter(new OutputStreamWriter(serialPort.getOutputStream()));
+			SettingsStore settings = new SettingsStore();
+			p = Runtime.getRuntime().exec("SerialWrapper.exe");
+			in = new BufferedReader( new InputStreamReader(p.getInputStream()) );
+	        out = new BufferedWriter( new OutputStreamWriter(p.getOutputStream()) );
+	        out.write(settings.get("serial.port") + "\n");
+	        out.flush();
 			busy = false;
-		} catch (NoSuchPortException e) {
-			return false;
-		} catch (PortInUseException e) {
-			return false;
-		} catch (UnsupportedCommOperationException e) {
-			return false;
-		} catch (IOException e) {
-			return false;
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		//serialPortWriter.println("C S");
 		return true;
@@ -68,7 +55,17 @@ public class BaseStationCommunications {
 		waitForFreePort();
 		//serialPortWriter.println("C E");
 		busy = false;
-		serialPort.close();
+		try {
+			out.write("Q\n");
+			out.flush();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try { Thread.sleep(100); } catch (InterruptedException e) { }
+		p.destroy();
+		p = null;
+		
 	}
 	//True = OK
 	//False = Error
@@ -77,31 +74,56 @@ public class BaseStationCommunications {
 		if(!waitForFreePort())
 			return false;
 		busy = true;
-		serialPortWriter.println("A " + pan + " " + tilt);
+		try {
+			out.write("A " + pan + " " + tilt  + "\n");
+			out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		busy = false;
 		return true;
 	}
-	
+
 	public String getAvailableRadioData() {
 		if(!waitForFreePort())
 			return "";
 		busy = true;
-		serialPortWriter.println("R");
-		String s;
 		try {
-			s = serialPortReader.readLine();
+		out.write("R\n");
+		out.flush();
 		} catch (IOException e) {
-			s = "";
+			
+		}
+		String s = "", total = "";
+		while(true) {
+			try {
+				s = in.readLine();
+				if(s.contains("-----END-----")) break;
+				total += s;
+				//System.err.println(s);
+			} catch (IOException e) {
+				s = "";
+				System.err.println("--ERR IN gARD---");
+				e.printStackTrace();
+			}
 		}
 		busy = false;
-		return s;
+		return total;
 	}
 	
 	public boolean sendRadio(String data) {
 		if(!waitForFreePort())
 			return false;
 		busy = true;
-		serialPortWriter.println("W " + data);
+		try {
+			out.write("W " + data + "\n");
+			out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		busy = false;
 		return true;
 	}

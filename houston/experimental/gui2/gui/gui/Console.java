@@ -1,11 +1,13 @@
 package gui;
 
+import gui.LandingModule.DeploymentStatus;
+
 import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.JTextArea;
 
-public class Console extends JTextArea implements RoverUpdateListener {
+public class Console extends JTextArea implements RoverUpdateListener, LandingModuleListener {
 	private static final long serialVersionUID = 4989941948035851333L;
 	public boolean paused = false;
 	Console() {
@@ -52,5 +54,30 @@ public class Console extends JTextArea implements RoverUpdateListener {
 			append("ERROR: " + message + "\n");
 			setCaretPosition(getDocument().getLength());
 		};
+	}
+
+	@Override
+	public void positionUpdated(Position newPosition, LandingModule m) {
+		if(!paused) {
+			append("LM|Location: " + newPosition.toString() + "\n");
+			setCaretPosition(getDocument().getLength());
+		};
+		
+	}
+
+	@Override
+	public void dataUpdated(TPData currentData, LandingModule m) {
+		if(!paused) {
+			append("LM|TP: " + currentData.toString() + "\n");
+			setCaretPosition(getDocument().getLength());
+		};	
+		
+	}
+
+	@Override
+	public void statusUpdated(DeploymentStatus deployed, boolean connected,
+			LandingModule m) {
+		// TODO Auto-generated method stub
+		
 	}
 }

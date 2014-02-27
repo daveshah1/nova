@@ -37,9 +37,12 @@ public class Main {
     private CustomMap map_2;
     private SettingsStore settings;
     private NetworkRover rover;
-    private ScheduledExecutorService updater;
+    private ScheduledExecutorService updater,  updater1, updater2;
     @SuppressWarnings("unused")
 	private LargeMap m;
+    private LandingModule module;
+    private BaseStationCommunications comms;
+    private AntennaManager ant;
 	/**
 	 * Launch the application.
 	 */
@@ -72,6 +75,9 @@ public class Main {
 	private void initialize() {
 		settings = new SettingsStore();
 		
+		module = new LandingModule();
+		comms = new BaseStationCommunications();
+		ant = new AntennaManager();
 		frame = new JFrame();
 		frame.setBounds(0,0,1280,739);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -206,13 +212,14 @@ public class Main {
 		final Console console = new Console();
 		rover = new NetworkRover();
 		rover.attachListener(console);
+		module.attachListener(console);
 		map_2 = new CustomMap(rover);
 		springLayout.putConstraint(SpringLayout.NORTH, map_2, 10, SpringLayout.NORTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, map_2, 10, SpringLayout.EAST, panel_1);
 		springLayout.putConstraint(SpringLayout.SOUTH, map_2, 300, SpringLayout.NORTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, map_2, -10, SpringLayout.EAST, frame.getContentPane());
 		frame.getContentPane().add( map_2);
-		
+		module.attachListener(map_2);
 		Runnable roverUpdater = new Runnable() {
 		    public void run() {
 		        rover.update();
@@ -223,6 +230,30 @@ public class Main {
 		//Schedule automated updating of the simulated rover.
 		updater = Executors.newScheduledThreadPool(1);
 		updater.scheduleAtFixedRate(roverUpdater, 0, 1000, TimeUnit.MILLISECONDS);
+		
+		
+		Runnable moduleUpdater = new Runnable() {
+		    public void run() {
+		        module.update();
+		    }
+		};
+		
+	
+		//Schedule automated updating of the simulated rover.
+		updater1 = Executors.newScheduledThreadPool(4);
+		updater1.scheduleAtFixedRate(moduleUpdater, 0, 2000, TimeUnit.MILLISECONDS);
+		
+		Runnable antennaUpdater = new Runnable() {
+		    public void run() {
+		        ant.updateAntennaPosition(comms);
+		    }
+		};
+		
+	
+		//Schedule automated updating of the simulated rover.
+		updater2 = Executors.newScheduledThreadPool(1);
+		updater2.scheduleAtFixedRate(antennaUpdater, 0, 1000, TimeUnit.MILLISECONDS);
+		
 		JPanel panel_3 = new JPanel();
 		//panel_3.setBackground(Color.WHITE);
 		springLayout.putConstraint(SpringLayout.NORTH, panel_3, 10, SpringLayout.SOUTH, map_2);
@@ -390,6 +421,20 @@ public class Main {
 				}
 			}
 		});
+		
+		JLabel lblArduino = new JLabel("Arduino: ");
+		panel_2e.add(lblArduino);
+		JButton btnStartBS = new JButton("Start");
+		panel_2e.add(btnStartBS);
+		btnStartBS.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				comms.startCommunications(settings.get("serial.port"));
+				module.startCommunications(comms);
+			}
+		});
+		
 		JPanel panel_2f = new JPanel();
 		springLayout.putConstraint(SpringLayout.NORTH, panel_2f, 0, SpringLayout.SOUTH, panel_2e);
 		springLayout.putConstraint(SpringLayout.WEST, panel_2f, 10, SpringLayout.EAST, panel);

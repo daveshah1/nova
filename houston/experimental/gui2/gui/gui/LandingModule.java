@@ -25,14 +25,16 @@ public class LandingModule {
 	}
 	private ScheduledExecutorService updater;
 	Vector<LandingModuleListener> listeners = new Vector<LandingModuleListener>();
-	public Position currentPosition;
-	protected TPData currentData;
-	public DeploymentStatus roverDeployed;
+	public Position currentPosition = new Position(0,0);
+	protected TPData currentData = new TPData(0,0);
+	public DeploymentStatus roverDeployed = DeploymentStatus.LOADED;
 	public boolean connected = false, running = false, gpsAvailable = false;
 	String radioBuffer = "";
 	private BaseStationCommunications baseStation;
 	public double gpsAltitude = 0;
 	public int status = -1;
+	
+	
 	public void attachListener(LandingModuleListener l) {
 		listeners.add(l);
 	};
@@ -75,7 +77,7 @@ public class LandingModule {
 	
 	public void startCommunications(BaseStationCommunications baseArduinoComms) {
 		baseStation = baseArduinoComms;
-		running = false;
+		running = true;
 	}
 
 	public void stopCommunications() {
@@ -83,31 +85,40 @@ public class LandingModule {
 	}
 	
 	public void update() {
+	
 		if(running) {
 			 boolean packetRecieved = false;
+				//System.err.println("...");
 			 String newData = baseStation.getAvailableRadioData();
 			 radioBuffer += newData;
+			 System.err.println(radioBuffer);
+			 
 			 while(true) {
-				 int endOfSentence = radioBuffer.indexOf("END");
-				 if(endOfSentence == -1) break; //No full packet remaining, stop
+				 int startOfSentence = radioBuffer.indexOf("START");
+				 int endOfSentence = radioBuffer.indexOf("END",startOfSentence + 5);
+				 if(startOfSentence == -1) break; //No full packet remaining, stop
 				 
-				 String sentence = radioBuffer.substring(0,endOfSentence); //Split at ending delimiter
+				 String sentence = radioBuffer.substring(startOfSentence+5,endOfSentence); //Split at ending delimiter
+				 System.out.println(sentence);
 				 radioBuffer = radioBuffer.substring(endOfSentence+3); //Put remainder back into buffer
-				 if(!sentence.startsWith("START")) continue; //Not a full sentence, discard
+				// if(!sentence.startsWith("START")) continue; //Not a full sentence, discard
 				 //Trim starting letter
-				 sentence = sentence.substring(5);
+				 //sentence = sentence.substring(5);
 				 String splitSentence[] = sentence.split(",");
-				 if(splitSentence.length < 7) continue;
-				 currentData.temperature = Double.parseDouble(splitSentence[0]) / 10;
+				 //if(splitSentence.length < 7) continue;
+				 currentData.temperature = Double.parseDouble(splitSentence[0]) / 100;
 				 currentData.pressure = Double.parseDouble(splitSentence[1]);
+				 System.out.println( currentData.temperature);
 				 gpsAvailable = Boolean.parseBoolean(splitSentence[2]);
 				 if(gpsAvailable) {
 					 currentPosition = new Position( Double.parseDouble(splitSentence[3]), 
 							 Double.parseDouble(splitSentence[4]));
 					 gpsAltitude = Double.parseDouble(splitSentence[5]);
 				 }
+				 
 				 packetRecieved = true;
 				 status = Integer.parseInt(splitSentence[6]);
+				 System.out.println( currentData.temperature);
 				 if(status == 7) {
 					 roverDeployed = DeploymentStatus.DEPLOYED;
 				 } else {

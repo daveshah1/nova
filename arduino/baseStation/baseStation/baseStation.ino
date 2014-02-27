@@ -127,9 +127,7 @@ int state = 0, lastState = 0;
 void loop() {
   //Check for available data on RF interface
   while(Serial1.available() > 0) {
-    if(state == 0) {
-      state = 1;
-    };
+
     *endOfBuffer = Serial1.read();
     endOfBuffer++;
     //Wrap around in event of buffer overflow
@@ -140,10 +138,14 @@ void loop() {
   //Check for available data on PC interface
 
   while(Serial.available() > 0) {
-    
+    if(state == 0) {
+      state = 1;
+    };    
     *endOfCommandBuffer = Serial.read();
-    endOfCommandBuffer++;
-    if(*(endOfCommandBuffer-1) == '\n') {
+    //Serial.write(*endOfCommandBuffer);
+
+    if(*(endOfCommandBuffer) == '#') {
+      endOfCommandBuffer++;
       *endOfCommandBuffer = '\0';
       //Handle serial command
       if(strncmp(commandBuffer,"A",1) == 0) { //Set antenna position
@@ -155,9 +157,10 @@ void loop() {
       }
       else if(strncmp(commandBuffer,"R",1) == 0) { //Read out radio buffer
         for(char *c=radioBuffer;c<endOfBuffer;c++) {
-          Serial.write(c);
+          Serial.write(*c);
         };
         Serial.println();
+        Serial.println("-----END-----");
         endOfBuffer = radioBuffer;
       }
       else if(strncmp(commandBuffer,"W",1) == 0) { //Transmit data over radio
@@ -168,7 +171,9 @@ void loop() {
         digitalWrite(AUX,LOW);
       };
       endOfCommandBuffer = commandBuffer;
-    };
+    } else {
+      endOfCommandBuffer++;
+    }
     //Wrap around in event of buffer overflow
     if(endOfCommandBuffer == commandBuffer+80) {
       endOfCommandBuffer = commandBuffer;
@@ -178,7 +183,7 @@ void loop() {
   if((millis() - timeLastUpdate) > 750) {
     //Update display if appropriate
     timeLastUpdate = millis();
-    lastState = state;
+
     if((state == 1) && (lastState == 0)) {
       drawSplash("NO DATA");
     };
@@ -202,5 +207,6 @@ void loop() {
       };
       drawArrows(up,down,left,right,ST7735_RED);
     };
+        lastState = state;
   };
 };

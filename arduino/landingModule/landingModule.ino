@@ -190,7 +190,8 @@ void loop() {
       Serial.print(",");
       Serial.print(millis() - timeStateStore);
       Serial.print(",");
-      Serial.print(useSD);
+      
+      Serial.print(relativisePressure(P));
       Serial.println("END");
       delay(10);
       digitalWrite(AUX,LOW);
@@ -314,10 +315,10 @@ inline int chrToInt(char c) {
  return c - '0'; 
 }
 //Convert pressure to relative altitude
-float relativisePressure(long Pr) {
+float relativisePressure(float Pr) {
   float altitude;
   if(nullPressure == -1) return 0;
-  altitude = 44330 * (1.0 - pow(Pr / nullPressure,0.1903));
+  altitude = 44330.0 * (1.0 - pow(Pr / nullPressure,0.1903));
   return altitude;
 }
 
