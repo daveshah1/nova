@@ -1,6 +1,9 @@
 package gui;
 
 import java.util.Vector;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /*
  * Radio sentence format
@@ -20,7 +23,7 @@ public class LandingModule {
 	public enum DeploymentStatus {
 		LOADED, DEPLOYED, UNKNOWN
 	}
-
+	private ScheduledExecutorService updater;
 	Vector<LandingModuleListener> listeners = new Vector<LandingModuleListener>();
 	public Position currentPosition;
 	protected TPData currentData;
@@ -29,7 +32,7 @@ public class LandingModule {
 	String radioBuffer = "";
 	private BaseStationCommunications baseStation;
 	public double gpsAltitude = 0;
-	public int status;
+	public int status = -1;
 	public void attachListener(LandingModuleListener l) {
 		listeners.add(l);
 	};
@@ -41,9 +44,35 @@ public class LandingModule {
 	};
 
 	public void deployRover() {
+		Runnable radioSender = new Runnable() {
+		    public void run() {
+		        if((status == 6) || (status == 7)) {
+		        	updater.shutdown();
+		        }
+		        baseStation.sendRadio("DEP");
+		    }
+		};
 		
+		//Keep going until accepted
+		updater = Executors.newScheduledThreadPool(1);
+		updater.scheduleAtFixedRate(radioSender, 0, 1000, TimeUnit.MILLISECONDS);
 	}
 
+	public void terminateDeployment() {
+		Runnable radioSender = new Runnable() {
+		    public void run() {
+		        if(status == 8) {
+		        	updater.shutdown();
+		        }
+		        baseStation.sendRadio("END");
+		    }
+		};
+		
+		//Keep going until accepted
+		updater = Executors.newScheduledThreadPool(1);
+		updater.scheduleAtFixedRate(radioSender, 0, 1000, TimeUnit.MILLISECONDS);
+	}
+	
 	public void startCommunications(BaseStationCommunications baseArduinoComms) {
 		baseStation = baseArduinoComms;
 		running = false;
@@ -59,10 +88,11 @@ public class LandingModule {
 			 String newData = baseStation.getAvailableRadioData();
 			 radioBuffer += newData;
 			 while(true) {
-				 int endOfSentence = radioBuffer.indexOf("END") + 2;
+				 int endOfSentence = radioBuffer.indexOf("END");
 				 if(endOfSentence == -1) break; //No full packet remaining, stop
+				 
 				 String sentence = radioBuffer.substring(0,endOfSentence); //Split at ending delimiter
-				 radioBuffer = radioBuffer.substring(endOfSentence+1); //Put remainder back into buffer
+				 radioBuffer = radioBuffer.substring(endOfSentence+3); //Put remainder back into buffer
 				 if(!sentence.startsWith("START")) continue; //Not a full sentence, discard
 				 //Trim starting letter
 				 sentence = sentence.substring(5);

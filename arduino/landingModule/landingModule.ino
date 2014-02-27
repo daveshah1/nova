@@ -51,15 +51,15 @@ double latitude = 0, longitude = 0, gpsAlt = 0;
 int gpshr = 0, gpsmin = 0, gpssec = 0;
 
 enum deployment_state {
-  WAITING,
-  LAUNCHING,
-  LAUNCHED,
-  LANDING,
-  LANDED,
-  READY_TO_DEPLOY,
-  DEPLOYING,
-  DEPLOYED,
-  CANCELLED
+  WAITING = 0,
+  LAUNCHING = 1,
+  LAUNCHED = 2,
+  LANDING = 3,
+  LANDED = 4,
+  READY_TO_DEPLOY = 5,
+  DEPLOYING = 6,
+  DEPLOYED = 7,
+  CANCELLED = 8
 };
 
 deployment_state currentState = WAITING;
