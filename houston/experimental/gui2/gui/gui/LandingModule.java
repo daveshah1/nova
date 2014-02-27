@@ -29,6 +29,7 @@ public class LandingModule {
 	String radioBuffer = "";
 	private BaseStationCommunications baseStation;
 	public double gpsAltitude = 0;
+	public int status;
 	public void attachListener(LandingModuleListener l) {
 		listeners.add(l);
 	};
@@ -40,7 +41,7 @@ public class LandingModule {
 	};
 
 	public void deployRover() {
-
+		
 	}
 
 	public void startCommunications(BaseStationCommunications baseArduinoComms) {
@@ -76,7 +77,8 @@ public class LandingModule {
 					 gpsAltitude = Double.parseDouble(splitSentence[5]);
 				 }
 				 packetRecieved = true;
-				 if(Integer.parseInt(splitSentence[6]) == 7) {
+				 status = Integer.parseInt(splitSentence[6]);
+				 if(status == 7) {
 					 roverDeployed = DeploymentStatus.DEPLOYED;
 				 } else {
 					 roverDeployed = DeploymentStatus.LOADED;
@@ -107,4 +109,5 @@ public class LandingModule {
 			l.dataUpdated(currentData, this);
 		}
 	}
+	
 }

@@ -66,9 +66,38 @@ deployment_state currentState = WAITING;
 
 #define AUX 20
 #define SET 27
+
+#define M2A_CTL 15
+#define M2B_CTL 14
+
+#define MS_OPEN 24
+#define MS_CLOSED 25
+
 bool useSD = false;
+
+void openLatch() {
+  long startTime = millis();
+  digitalWrite(M2A_CTL,HIGH);
+  digitalWrite(M2B_CTL,LOW);
+  while((digitalRead(MS_OPEN) == 1) && ((millis() - startTime) > 7500));
+  digitalWrite(M2A_CTL,LOW);
+  digitalWrite(M2B_CTL,LOW);    
+};
+
+void closeLatch() {
+  long startTime = millis();
+  digitalWrite(M2A_CTL,LOW);
+  digitalWrite(M2B_CTL,HIGH);
+  while((digitalRead(MS_CLOSED) == 1) && ((millis() - startTime) > 7500));
+  digitalWrite(M2A_CTL,LOW);
+  digitalWrite(M2B_CTL,LOW);  
+};
+
 void setup() {
-    
+    pinMode(MS_OPEN,INPUT); //NB: 1 = switch inactive, 0 = switch active
+    pinMode(MS_CLOSED,INPUT); //NB: 1 = switch inactive, 0 = switch active
+    pinMode(M2A_CTL,OUTPUT);
+    pinMode(M2B_CTL,OUTPUT);
     pinMode(28,OUTPUT);  
     pinMode(AUX, OUTPUT);
     pinMode(SET, OUTPUT);
@@ -113,6 +142,10 @@ void setup() {
       myFile.println("time,t,p,gps,lat,lon,alt,ax,ay,az,gx,gy,gz"); 
       myFile.close();
     }
+    //Indeterminate state
+    if( (digitalRead(MS_OPEN) == 1) && (digitalRead(MS_CLOSED) == 1)) {
+      closeLatch();
+    };
 }
 long t = 0;
 char serialBuffer[500] = {0};
@@ -121,7 +154,7 @@ long nullPressure = -1;
 
 float altitudeStateStore = 0;
 long timeStateStore = 0;
-
+char ch1 = 0, ch2 = 0, ch3 = 0;
 void loop() {
     if((millis() - t) > 300) {
       digitalWrite(28,HIGH);
@@ -140,7 +173,7 @@ void loop() {
       
       digitalWrite(AUX,HIGH);
       delay(20);
-      Serial.print("START")
+      Serial.print("START");
       Serial.print(TEMP);
       Serial.print(",");
       Serial.print(P);
@@ -154,8 +187,13 @@ void loop() {
       Serial.print(gpsAlt);
       Serial.print(",");
       Serial.print(currentState);
+      Serial.print(",");
+      Serial.print(millis() - timeStateStore);
+      Serial.print(",");
+      Serial.print(useSD);
       Serial.println("END");
       delay(10);
+      digitalWrite(AUX,LOW);
      // digitalWrite(AUX,LOW);
       if (!myFile.open(filename, O_RDWR | O_CREAT | O_AT_END)) {
         //sd.errorHalt("#Opening file for write failed");
@@ -252,8 +290,24 @@ void loop() {
         break;
       case DEPLOYING:
         //Motor and microswitch stuff
+        openLatch();
+        currentState = DEPLOYED;
+        break;
+      case DEPLOYED:
+        //Nothing here for now
         break;
     }
+    while(Serial.available() > 0) {
+      ch1 = ch2;
+      ch2 = ch3;
+      ch3 = Serial.read();
+      if((ch1 == 'E') && (ch2 == 'N') && (ch3 == 'D')) {
+        currentState = CANCELLED;
+      };
+      if((ch1 == 'D') && (ch2 == 'E') && (ch3 == 'P')) {
+        currentState = DEPLOYING;
+      };
+    };
 };
 
 inline int chrToInt(char c) {
