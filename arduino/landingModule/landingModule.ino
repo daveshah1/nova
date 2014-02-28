@@ -71,7 +71,6 @@ deployment_state currentState = WAITING;
 #define M2B_CTL 14
 
 #define MS_OPEN 24
-#define MS_CLOSED 25
 
 bool useSD = false;
 
@@ -84,18 +83,9 @@ void openLatch() {
   digitalWrite(M2B_CTL,LOW);    
 };
 
-void closeLatch() {
-  long startTime = millis();
-  digitalWrite(M2A_CTL,LOW);
-  digitalWrite(M2B_CTL,HIGH);
-  while((digitalRead(MS_CLOSED) == 1) && ((millis() - startTime) > 7500));
-  digitalWrite(M2A_CTL,LOW);
-  digitalWrite(M2B_CTL,LOW);  
-};
 
 void setup() {
     pinMode(MS_OPEN,INPUT); //NB: 1 = switch inactive, 0 = switch active
-    pinMode(MS_CLOSED,INPUT); //NB: 1 = switch inactive, 0 = switch active
     pinMode(M2A_CTL,OUTPUT);
     pinMode(M2B_CTL,OUTPUT);
     pinMode(28,OUTPUT);  
@@ -142,10 +132,6 @@ void setup() {
       myFile.println("time,t,p,gps,lat,lon,alt,ax,ay,az,gx,gy,gz"); 
       myFile.close();
     }
-    //Indeterminate state
-    if( (digitalRead(MS_OPEN) == 1) && (digitalRead(MS_CLOSED) == 1)) {
-      closeLatch();
-    };
 }
 long t = 0;
 char serialBuffer[500] = {0};
