@@ -449,7 +449,38 @@ public class Main {
 			}
 		});
 		panel_2f.add(btnSettings);
-		panel_1.updateImage();
+		
+		JLabel lblDeployment = new JLabel("Deployment:");
+		panel_2f.add(lblDeployment);
+		JButton btnDeploy = new JButton("Deploy");
+		btnDeploy.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				 if(JOptionPane.showConfirmDialog(frame,
+						 "Are you sure you want to deploy the rover?",
+						 "Deployment",
+						 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					 module.deployRover();
+				 }
+				
+			}
+		});
+		panel_2f.add(btnDeploy);
+		JButton btnAbort = new JButton("Abort");
+		btnAbort.setBackground(Color.RED);
+		btnAbort.setForeground(Color.WHITE);
+		btnAbort.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+					 module.terminateDeployment();
+			}
+				
+			
+		});
+		panel_2f.add(btnAbort);
+		//panel_1.updateImage();
 		frame.toFront();
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
