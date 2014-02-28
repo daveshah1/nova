@@ -115,7 +115,8 @@ void setup() {
     Serial.println("#Initialised I2C devices");
     
     Serial.println("#Initialising uSD");
-    if (!sd.begin(chipSelect, SPI_HALF_SPEED)) {
+    if (!sd.begin(chipSelect, SPI_SIXTEENTH_SPEED)) {
+      sd.initErrorHalt();
          useSD = false;
         Serial.println("---SD ERROR---");
     } else {
