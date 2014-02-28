@@ -109,7 +109,7 @@ void setup() {
   drawSplash("OFFLINE");
 };
 
-char radioBuffer[1024];
+char radioBuffer[1500];
 char *endOfBuffer = radioBuffer;
 char commandBuffer[80];
 char *endOfCommandBuffer = commandBuffer;
@@ -125,16 +125,7 @@ int angleV, angleH;
 int state = 0, lastState = 0;
 
 void loop() {
-  //Check for available data on RF interface
-  while(Serial1.available() > 0) {
 
-    *endOfBuffer = Serial1.read();
-    endOfBuffer++;
-    //Wrap around in event of buffer overflow
-    if(endOfBuffer == radioBuffer+1024) {
-      endOfBuffer = radioBuffer;
-    };
-  };
   //Check for available data on PC interface
 
   while(Serial.available() > 0) {
@@ -179,7 +170,16 @@ void loop() {
       endOfCommandBuffer = commandBuffer;
     };
   };
-  
+    //Check for available data on RF interface
+  while(Serial1.available() > 0) {
+
+    *endOfBuffer = Serial1.read();
+    endOfBuffer++;
+    //Wrap around in event of buffer overflow
+    if(endOfBuffer >= radioBuffer+1500) {
+      endOfBuffer = radioBuffer;
+    };
+  };
   if((millis() - timeLastUpdate) > 750) {
     //Update display if appropriate
     timeLastUpdate = millis();
