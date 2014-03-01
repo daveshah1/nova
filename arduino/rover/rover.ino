@@ -154,7 +154,7 @@ void loop() {
                           if((tmppage[0] == 0x50) && (tmppage[1] == 0x41) && (tmppage[2] == 0x47) && (tmppage[3] == 0x45) && (tmppage[4] == 0x00) && (tmppage[5] == 0x00) &&  (tmppage[6] == 0x00)) {
                             Serial.println("--BREAK--");
                           } else {
-                            Serial.print((unsigned long)((unsigned long)tmppage[0] * 65536) + (unsigned long)(tmppage[1] * 256) + tmppage[2]);
+                            Serial.print((unsigned long)((unsigned long)tmppage[0] * 65536L) + (unsigned long)(tmppage[1] * 256L) + tmppage[2]);
                             Serial.print(",");
                             Serial.print(((int)tmppage[3] << 8) | (int)tmppage[4]);
                             Serial.print(",");
@@ -166,9 +166,9 @@ void loop() {
                         sp.sendReply("OK","");     
                } else if(strncmp(cmd,"LK",2)==0) { //Poll deployment status
                         if(digitalRead(POD_MISO)==LOW) {
-                          sp.sendReply("OK","D");
-                        } else {
                           sp.sendReply("OK","N");
+                        } else {
+                          sp.sendReply("OK","D");
                         };             
 		} else if(strncmp(cmd,"PI",2)==0) {
 			sp.sendReply("OK","");
@@ -180,8 +180,8 @@ void loop() {
         
         unsigned int deltat = millis() - lastMillis;
         if(deltat > 2000) {
-          eepage[0] = (pressure >> 16) & 0xFF;
-          eepage[1] = (pressure >> 8) & 0xFF;
+          eepage[0] = (pressure >> 16L) & 0xFF;
+          eepage[1] = (pressure >> 8L) & 0xFF;
           eepage[2] = (pressure) & 0xFF;
           eepage[3] = (temp >> 8) & 0xFF;
           eepage[4] = (temp) & 0xFF;

@@ -1,8 +1,6 @@
 import datahandler
 import arduino
 import time
-from threading import Timer
-import traceback
 from math import radians, cos, sin, asin, sqrt, degrees, atan2
 
 """
@@ -85,8 +83,8 @@ def begin():
         with open('/home/root/turncal', 'r') as f:
             line = f.readline()
             splitline = ",".split(line)
-            turnCoefficientLeft = float(line[0])
-            turnCoefficientRight = float(line[1])
+            turnCoefficientLeft = float(splitline[0])
+            turnCoefficientRight = float(splitline[1])
     except:
         pass #File not opened, use default values
 
@@ -98,7 +96,7 @@ Call regularly to continue background navigation tasks
 def update():
     global turnCoefficientLeft, turnCoefficientRight
     global refLat, refLon, targetLat, targetLon
-    global automaticNavigation, lastTurnAutomatic, directionLastTurn, estimatedRoverDirection
+    global automaticNavigation, lastTurnAutomatic, directionLastTurn, estimatedRoverDirection, angleLastTurn
     global directionValidityStatus
     if(automaticNavigation):
         currentLat = datahandler.latestLat
@@ -152,6 +150,7 @@ def update():
         arduino.motorCtl("F","F")
         
 def manualTurn(direction, angle):
+    global automaticNavigation,estimatedRoverDirection,lastTurnAutomatic
     automaticNavigation = False
     lastTurnAutomatic = False
     if(direction == 0):
@@ -163,7 +162,7 @@ def manualTurn(direction, angle):
         arduino.motorCtl("S","S")    
     else:
         timeToTurn = (abs(angle) / 90) * turnCoefficientLeft
-        estimatedRoverDirection += amountToTurn
+        estimatedRoverDirection += angle
         estimatedRoverDirection = (estimatedRoverDirection + 360) % 360
         arduino.motorCtl("F","B")
         time.sleep(timeToTurn / 1000)

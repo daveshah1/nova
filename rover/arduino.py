@@ -99,3 +99,14 @@ def readTP():
                 continue
             return ( float(splitstr[0]) / 10, float(splitstr[1]) )
     return (-1,-1)
+
+def isDeployed():
+    for i in range(1,3):
+        response = sendRequest("TP","")
+        if(response.status == STATUS_OK):
+            if(response.data == "D"):
+                return True
+            else:
+                return False
+           
+    return False

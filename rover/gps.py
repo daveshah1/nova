@@ -1,15 +1,11 @@
 import serial
-import subprocess
-import time
+import time, os
 import traceback
 gpsPort = None
 currentSentence = ""
 debug = False
 def begin():
     global gpsPort
-    #Route UART2 to external I/O
-    subprocess.call(["devmem2","0x48002170","w","0x011C011C"]) 
-    subprocess.call(["devmem2","0x48002178","w","0x01180000"]) 
     #Open serial port
     gpsPort = serial.Serial("/dev/ttyS1",9600,timeout=3)
     
@@ -22,14 +18,16 @@ def getSentence(code, timeout):
             if(len(s) > 10): 
                 if(s[:6] == code): #Only interested in position updates for now
                     if(debug):
-                        print "Got " + code + ": " + currentSentence
-                    with open('gps.log', 'a') as f:
+                        print "Got " + code + ": " + s
+                    with open(os.environ['DIR'] + '/gps.log', 'a') as f:
                         f.write("Recieved Sentence: " + s + "\n")
                     return s
+        except KeyboardInterrupt:
+            exit(0)
         except:
             try: 
                 #Log exception for failure analysis
-                with open('gps.log', 'a') as f:
+                with open(os.environ['DIR'] + '/gps.log', 'a') as f:
                     f.write("+++++ EXCEPTION +++++\n")
                     f.write(traceback.format_exc() + "\n")
                 if(debug):
