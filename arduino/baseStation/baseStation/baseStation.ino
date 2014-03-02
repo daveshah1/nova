@@ -16,7 +16,7 @@
 #define AUX 17
 /*-------------------*/
 
-int tol = 2; //Antenna position tolerance
+int htol = 2, vtol = 5; //Antenna position tolerance
 
 LSM303 compass;
 Adafruit_ST7735 tft = Adafruit_ST7735(cs, dc, rst);
@@ -142,9 +142,9 @@ void loop() {
       if(strncmp(commandBuffer,"A",1) == 0) { //Set antenna position
         char *part1 = strtok(commandBuffer," ");
         part1 = strtok(NULL," ");
-        Serial.println(part1);
+        //Serial.println(part1);
         char *part2 = strtok(NULL," ");
-        Serial.println(part2);
+       // Serial.println(part2);
         angleH = atoi(part1);
         angleV = atoi(part2);
         state = 2;
@@ -191,22 +191,32 @@ void loop() {
       drawSplash("NO DATA");
     };
     if(state == 2) {
+      compass.read();
       int currentH = (int)overSampleHeading();
-      int currentV = 0; //TODO: accelerometer read
+      /*Serial.print("X=");
+      Serial.print(compass.a.x);
+      Serial.print(" Y=");
+      Serial.print(compass.a.y);
+      Serial.print(" Z=");
+      Serial.println(compass.a.z);*/
+      
+      int currentV = atan(compass.a.y/9800.0) * (180.0 / 3.14152); //TODO: accelerometer read
       bool up = false, down = false, left = false, right = false;
       tft.fillScreen(ST7735_WHITE);
-      if((currentH - angleH) > tol) {
-        left = true;
-      };
-      if((currentH - angleH) < -tol) {
+      int deltaH = ((currentH - angleH + 360) % 360);
+      int deltaV = ((currentV - angleV + 360) % 360);
+      if((deltaH < 180) && (deltaH > htol)) {
         right = true;
       };
-      
-      if((currentV - angleV) > tol) {
-        down = true;
+      if((deltaH > 180) && (deltaH < 360-htol)) {
+        left = true;
       };
-      if((currentV - angleV) < -tol) {
+      
+      if((deltaV < 180) && (deltaV > vtol)) {
         up = true;
+      };
+      if((deltaV > 180) && (deltaV < 360-vtol)) {
+        down = true;
       };
       drawArrows(up,down,left,right,ST7735_RED);
     };
