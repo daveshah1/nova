@@ -432,6 +432,8 @@ public class Main {
 			public void actionPerformed(ActionEvent arg0) {
 				comms.startCommunications(settings.get("serial.port"));
 				module.startCommunications(comms);
+				module.attachListener(ant);
+				rover.attachListener(ant);
 			}
 		});
 		

@@ -71,13 +71,16 @@ public class AntennaManager implements RoverUpdateListener,
 	}
 	
 	public void updateAntennaPosition(BaseStationCommunications b) {
+		System.err.println("HI");
 		if(havePositionFix) {
+			
 			Position home = new Position(settings.getDouble("home.lat"),
 					settings.getDouble("home.long"));
 			double homeAlt = settings.getDouble("home.alt");
 			double horizontalDistance = home.getDistanceTo(currentTrackingPosition);
-			double horizontalAngle = home.getBearingTo(currentTrackingPosition);
+			double horizontalAngle = currentTrackingPosition.getBearingTo(home);
 			double verticalAngle = Math.toDegrees(Math.atan((currentTrackingAltitude - homeAlt) / horizontalDistance));
+			System.err.println(horizontalAngle +  " " + verticalAngle);
 			b.setAntennaTilt((int)verticalAngle, (int)horizontalAngle);
 		}
 	}

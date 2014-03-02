@@ -110,7 +110,7 @@ public class LandingModule {
 					currentData.temperature = Double.parseDouble(splitSentence[0]) / 100;
 					currentData.pressure = Double.parseDouble(splitSentence[1]);
 					System.out.println(currentData.temperature);
-					gpsAvailable = Boolean.parseBoolean(splitSentence[2]);
+					gpsAvailable = (Integer.parseInt(splitSentence[2]))>0;
 					if (gpsAvailable) {
 						currentPosition = new Position(Double.parseDouble(splitSentence[3]),
 								Double.parseDouble(splitSentence[4]));

@@ -136,18 +136,21 @@ void loop() {
     //Serial.write(*endOfCommandBuffer);
 
     if(*(endOfCommandBuffer) == '#') {
-      endOfCommandBuffer++;
+      //endOfCommandBuffer++;
       *endOfCommandBuffer = '\0';
       //Handle serial command
       if(strncmp(commandBuffer,"A",1) == 0) { //Set antenna position
-        char *part1 = strtok(commandBuffer+2," ");
+        char *part1 = strtok(commandBuffer," ");
+        part1 = strtok(NULL," ");
+        Serial.println(part1);
         char *part2 = strtok(NULL," ");
+        Serial.println(part2);
         angleH = atoi(part1);
         angleV = atoi(part2);
         state = 2;
       }
       else if(strncmp(commandBuffer,"R",1) == 0) { //Read out radio buffer
-        for(char *c=radioBuffer;c<endOfBuffer;c++) {
+        for(char *c = radioBuffer;c<endOfBuffer;c++) {
           Serial.write(*c);
         };
         Serial.println();

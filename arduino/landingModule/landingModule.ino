@@ -85,6 +85,7 @@ void openLatch() {
 
 
 void setup() {
+    currentState = WAITING;
     pinMode(MS_OPEN,INPUT); //NB: 1 = switch inactive, 0 = switch active
     pinMode(M2A_CTL,OUTPUT);
     pinMode(M2B_CTL,OUTPUT);
@@ -224,10 +225,14 @@ void loop() {
       if(*bufferPosition == '\n') {
         *(++bufferPosition) = '\0';
         Serial.println(serialBuffer);
+        Serial.print("END");
         parseNMEA();
         bufferPosition = serialBuffer;
       } else {
         bufferPosition++;
+        if(bufferPosition >= (serialBuffer+500)) {
+          bufferPosition = serialBuffer; 
+        }
       };
     };
     switch(currentState) {
@@ -317,7 +322,7 @@ void parseNMEA() {
     //Disassemble NMEA sentence
     int index = 0, index2 = 0;
     char currentChar  = serialBuffer[0];
-    while(currentChar != '\0') {
+    while((currentChar != '\0') && (currentPoint < 18) && (index < 500)) {
       if((currentChar == ',') || (index2 > 14)) {
         splitstr[currentPoint][index2] = '\0';
         currentPoint++;
@@ -328,6 +333,10 @@ void parseNMEA() {
       };
       index++;
       currentChar = serialBuffer[index];
+    };
+    if(currentPoint < 13) {
+      Serial.println("Rejecting bad GPGGA");
+      return;
     };
     gpshr = chrToInt(splitstr[1][0]) * 10 + chrToInt(splitstr[1][1]);
     gpsmin = chrToInt(splitstr[1][2]) * 10 + chrToInt(splitstr[1][3]);
