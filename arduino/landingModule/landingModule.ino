@@ -66,7 +66,7 @@ deployment_state currentState = WAITING;
 
 #define AUX 20
 #define SET 27
-
+#define PULLUP 26
 #define M2A_CTL 15
 #define M2B_CTL 14
 
@@ -78,7 +78,7 @@ void openLatch() {
   long startTime = millis();
   digitalWrite(M2A_CTL,HIGH);
   digitalWrite(M2B_CTL,LOW);
-  while((digitalRead(MS_OPEN) == 1) && ((millis() - startTime) > 7500));
+  while((digitalRead(MS_OPEN) == 1) && ((millis() - startTime) < 7500));
   digitalWrite(M2A_CTL,LOW);
   digitalWrite(M2B_CTL,LOW);    
 };
@@ -86,6 +86,8 @@ void openLatch() {
 
 void setup() {
     currentState = WAITING;
+    pinMode(PULLUP,OUTPUT);
+    digitalWrite(PULLUP,HIGH);
     pinMode(MS_OPEN,INPUT); //NB: 1 = switch inactive, 0 = switch active
     pinMode(M2A_CTL,OUTPUT);
     pinMode(M2B_CTL,OUTPUT);
@@ -117,7 +119,7 @@ void setup() {
     
     Serial.println("#Initialising uSD");
     if (!sd.begin(chipSelect, SPI_SIXTEENTH_SPEED)) {
-      sd.initErrorHalt();
+      //sd.initErrorHalt();
          useSD = false;
         Serial.println("---SD ERROR---");
     } else {
@@ -129,7 +131,7 @@ void setup() {
       Serial.print("#Writing to ");
       Serial.println(filename);
       if (!myFile.open(filename, O_RDWR | O_CREAT | O_AT_END)) {
-        sd.errorHalt("#Opening file for write failed");
+        //sd.errorHalt("#Opening file for write failed");
       }
       myFile.println("time,t,p,gps,lat,lon,alt,ax,ay,az,gx,gy,gz"); 
       myFile.close();
@@ -225,7 +227,7 @@ void loop() {
       if(*bufferPosition == '\n') {
         *(++bufferPosition) = '\0';
         Serial.println(serialBuffer);
-        Serial.print("END");
+        //Serial.print("END");
         parseNMEA();
         bufferPosition = serialBuffer;
       } else {
