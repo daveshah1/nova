@@ -17,6 +17,7 @@ sleep 2
 timeout 5 ifdown wlan0
 sleep 2
 timeout 60 ifup wlan0
+/home/root/rover/start.sh > /home/root/start.sh.log
 while [ 1 ]
 do	
 	#Check if network is alive

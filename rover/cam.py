@@ -4,6 +4,4 @@ while True:
 	print output
         shutil.copy("00000001.png",os.environ['DIR'] + "/" + time.strftime("%H:%M:%S") + "-cap.png")
         os.rename("00000001.png","/var/www/image.png")
-
-	time.sleep(1)
-
+        time.sleep(0.1)

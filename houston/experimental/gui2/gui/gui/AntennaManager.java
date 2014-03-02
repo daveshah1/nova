@@ -71,7 +71,7 @@ public class AntennaManager implements RoverUpdateListener,
 	}
 	
 	public void updateAntennaPosition(BaseStationCommunications b) {
-		System.err.println("HI");
+		//System.err.println("HI");
 		if(havePositionFix) {
 			
 			Position home = new Position(settings.getDouble("home.lat"),

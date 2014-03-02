@@ -85,7 +85,7 @@ def depCheck():
         
 
 def main():
-    HOST, PORT = "192.168.1.39", 9001 #Bind to 192.168.1.39, port 9001 
+    HOST, PORT = "", 9001 #Bind to 192.168.1.39, port 9001 
     server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
     gps.begin()
     datahandler.begin()

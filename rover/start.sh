@@ -1,6 +1,7 @@
-[[ $(find /home/root/log* | tail -1) =~ ^(.*)([0-9]{3})$ ]]
-export DIR=$(printf "${BASH_REMATCH[1]}%03d" $(( 10#${BASH_REMATCH[2]} + 1 )) )
+#!/bin/bash
+export newfile=`ls /home/root/log/ | sed 's/_/ _/' | sort -rn | awk '{printf "%03d", $1 + 1; exit}'`
+export DIR=/home/root/log/$newfile
 mkdir $DIR
 echo $DIR
-./camtest.sh &
-./mainprog.sh &
+/home/root/rover/camtest.sh &
+/home/root/rover/mainprog.sh &
