@@ -20,11 +20,11 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         elif(self.data[3:5] == "CL"):
             self.request.sendall("RP OK " + str(datahandler.latestLat) + " " + str(datahandler.latestLon) + "\n")
         elif(self.data[3:5] == "MV"):
-            deployed = True
             if(len(self.data) < 7):
                 self.request.sendall("RP NP\n")
             else:
                 if(self.data[6] == "F"):
+                    deployed = True
                     navigator.manualForward()
                     status = True
                 elif(self.data[6] == "L"):
@@ -48,9 +48,11 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
             navigator.manualStop()
             self.request.sendall("RP OK\n")
         elif(self.data[3:5] == "GT"):
-            deployed = True
             splitd = self.data[6:].split(' ')
             navigator.navigateAutomatically(float(splitd[0]),float(splitd[1]))
+            self.request.sendall("RP OK\n")
+        elif(self.data[3:5] == "FT"):
+            arduino.formatEEPROM();
             self.request.sendall("RP OK\n")
         elif(self.data[3:5] == "TP"):
             #temperature, pressure = arduino.readTP()
@@ -58,6 +60,12 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
                 self.request.sendall("RP OE\n")
             else:
                 self.request.sendall("RP OK " + str(datahandler.latestT) + " " + str(datahandler.latestP) + "\n")
+        elif(self.data[3:5] == "DP"):
+            realDeployed = arduino.isDeployed()
+            if(realDeployed):
+                self.request.sendall("RP OK D\n")
+            else:
+                self.request.sendall("RP OK N\n")
         else:
             self.request.sendall("RP NC")
 
@@ -66,7 +74,7 @@ def depCheck():
     if((time.time() - lastCommTime) > 90):
         if(arduino.isDeployed()):        
             deployed = True
-            navigator.navigateAutomatically(0,0)
+            navigator.navigateAutomatically(0,0) #Update
         else:
             deployed = False
         lastCommTime = time.time()
@@ -77,7 +85,7 @@ def depCheck():
         
 
 def main():
-    HOST, PORT = "192.168.1.39", 9001 #Bind to 0.0.0.0, port 9001 
+    HOST, PORT = "192.168.1.39", 9001 #Bind to 192.168.1.39, port 9001 
     server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
     gps.begin()
     datahandler.begin()

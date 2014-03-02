@@ -2,3 +2,5 @@
 export DIR=$(printf "${BASH_REMATCH[1]}%03d" $(( 10#${BASH_REMATCH[2]} + 1 )) )
 mkdir $DIR
 echo $DIR
+./camtest.sh &
+./mainprog.sh &

@@ -108,5 +108,11 @@ def isDeployed():
                 return True
             else:
                 return False
-           
+    return False
+
+def formatEEPROM():
+    for i in range(1,3):
+        response = sendRequest("FT","")
+        if(response.status == STATUS_OK):
+            return True
     return False
