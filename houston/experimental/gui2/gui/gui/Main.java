@@ -43,6 +43,7 @@ public class Main {
     private LandingModule module;
     private BaseStationCommunications comms;
     private AntennaManager ant;
+    private DataLogger d;
 	/**
 	 * Launch the application.
 	 */
@@ -482,8 +483,31 @@ public class Main {
 			
 		});
 		panel_2f.add(btnAbort);
+		
+		JLabel lblEEPROM = new JLabel("EEPROM:");
+		panel_2f.add(lblEEPROM);
+		JButton btnFormatEEPROM = new JButton("Format");
+		btnFormatEEPROM.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				 if(JOptionPane.showConfirmDialog(frame,
+						 "Are you sure you want to format the rover's EEPROM?",
+						 "EEPROM Operation",
+						 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					 rover.formatEEPROM();
+				 }
+				
+			}
+		});
+		panel_2f.add(btnFormatEEPROM);
+		
 		//panel_1.updateImage();
 		frame.toFront();
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		d = new DataLogger();
+		d.start();
+		rover.attachListener(d);
+		module.attachListener(d);
 	}
 }

@@ -32,9 +32,9 @@ public class DataLogger implements RoverUpdateListener, LandingModuleListener {
 			}
 			
 		}
-		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HHmmss");
 		Date date = new Date();
-		filename = "log-" + dateFormat.format(date) + ".csv";
+		filename = "./data/log-" + dateFormat.format(date) + ".csv";
 		logging = true;
 		putLine("Time,Rover Latitude, Rover Longitude, Rover Temperature, Rover Pressure,"
 				+ "Landing Module Latitude, Landing Module Longitude, Landing Module Temperature, Landing Module Pressure");
@@ -53,7 +53,7 @@ public class DataLogger implements RoverUpdateListener, LandingModuleListener {
 			outputStream = null;
 			fileWriter = null;
 		} catch(Exception e) {
-			
+			e.printStackTrace();
 		}
 	}
 	

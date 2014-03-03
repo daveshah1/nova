@@ -243,6 +243,41 @@ public class NetworkRover extends Rover {
 		};
 	}
 	
+	public void formatEEPROM() {
+		if(online) {
+			try {
+				waitForFreeNetwork();
+			} catch(NetworkException e) {
+				throwError("Couldn't format EEPROM - error: timeout");
+				return;
+			}
+			busy = true;
+			NetworkCommand cmd = new NetworkCommand("FT");
+			NetworkStatus status = network.sendCommand(cmd).getStatus();
+			busy = false;
+			switch(status) {
+			case OK:
+				break;
+			case COMMUNICATION_ERROR:
+				//Try once more
+				try {
+					waitForFreeNetwork();
+				} catch(NetworkException e) {
+					throwError("Couldn't format EEPROM - error: timeout");
+					return;
+				}
+				busy = true;
+				NetworkStatus newStatus = network.sendCommand(cmd).getStatus();
+				busy = false;
+				if(newStatus == NetworkStatus.OK) break;
+				//Otherwise drop into error handling
+			default:
+				throwError("Couldn't format EEPROM - error: " + status.toString());
+				return;
+			}
+		};
+	}
+	
 	public TPData getTP() throws NetworkException {
 		if(online) {
 			waitForFreeNetwork();
