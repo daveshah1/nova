@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.LayoutManager;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -70,7 +71,9 @@ public class NetworkImageViewer extends JPanel {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (image != null) {
-			g.drawImage(image, 0, 0, 640, 480, null);
+			Graphics2D g2 = (Graphics2D)g;
+			g2.rotate(Math.toRadians(90));
+			g2.drawImage(image, 0, 0, 640, 480, this);
 		}
 		g.setColor(new Color(255,0,0,100));
 		g.fillRect(295, 239, 15, 2);
