@@ -293,7 +293,7 @@ public class Main {
 		btnConvertIntoDem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				m = new LargeMap(rover,new Position(map_2.getPosition()),map_2.getZoom());
+				m = new LargeMap(rover,module,new Position(map_2.getPosition()),map_2.getZoom());
 			}
 			
 		});

@@ -27,14 +27,15 @@ public class LargeMap extends JFrame implements WindowStateListener {
 	JLabel lblPosition;
 	Position relativeDatumPoint = null;
 	Position lastMousePosition = null;
-	LargeMap(Rover r, Position centre, int zoomLevel) {
+	LandingModule module = null;
+	LargeMap(Rover r, LandingModule m, Position centre, int zoomLevel) {
 		super();
 		setTitle("Map");
 		setSize(500, 500);
 		SpringLayout springLayout = new SpringLayout();
 		this.getContentPane().setLayout(springLayout);
 		JButton btnGoto = new JButton("Go To");
-
+		module = m;
 		btnGoto.addActionListener(new ActionListener() {
 
 			@Override
@@ -50,7 +51,9 @@ public class LargeMap extends JFrame implements WindowStateListener {
 								rover.currentPosition.getLon(), map_2.getZoom());
 						break;
 					case GOTO_MODULE:
-						// TODO
+						map_2.setDisplayPositionByLatLon(
+								module.currentPosition.getLat(),
+								module.currentPosition.getLon(), map_2.getZoom());
 						break;
 					case GOTO_LATLONG:
 						map_2.setDisplayPositionByLatLon(
@@ -131,7 +134,9 @@ public class LargeMap extends JFrame implements WindowStateListener {
 		getContentPane().add(map_2);
 
 		setVisible(true);
-		this.rover =r;
+		this.rover = r;
+		module.attachListener(map_2);
+		rover.attachListener(map_2);
 	}
 
 	@Override
@@ -140,6 +145,7 @@ public class LargeMap extends JFrame implements WindowStateListener {
 	};
 
 	public void windowClosed(WindowEvent e) {
-		rover.removeListener(l);
+		rover.removeListener(map_2);
+		module.removeListener(map_2);
 	}
 }
