@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -71,9 +72,13 @@ public class NetworkImageViewer extends JPanel {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (image != null) {
-			Graphics2D g2 = (Graphics2D)g;
-			g2.rotate(Math.toRadians(90));
-			g2.drawImage(image, 0, 0, 640, 480, this);
+			 AffineTransform at = new AffineTransform();
+             at.translate(getWidth() / 2, getHeight() / 2);
+             at.rotate(Math.PI/4);
+             at.scale(0.5, 0.5);
+             at.translate(-image.getWidth()/2, -image.getHeight()/2);
+             Graphics2D g2d = (Graphics2D) g;
+             g2d.drawImage(image, at, null);
 		}
 		g.setColor(new Color(255,0,0,100));
 		g.fillRect(295, 239, 15, 2);
