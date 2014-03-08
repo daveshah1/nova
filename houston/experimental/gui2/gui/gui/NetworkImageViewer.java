@@ -74,7 +74,7 @@ public class NetworkImageViewer extends JPanel {
 		if (image != null) {
 			 AffineTransform at = new AffineTransform();
              at.translate(getWidth() / 2, getHeight() / 2);
-             at.rotate(Math.PI/4);
+             at.rotate(Math.PI/2);
              at.scale(0.5, 0.5);
              at.translate(-image.getWidth()/2, -image.getHeight()/2);
              Graphics2D g2d = (Graphics2D) g;

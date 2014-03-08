@@ -1,5 +1,5 @@
 #include <I2Cdev.h>
-#include <strings.h>
+#include <strings.h>  
 #include <helper_3dmath.h>
 #include <MPU6050.h>
 
@@ -67,10 +67,10 @@ deployment_state currentState = WAITING;
 #define AUX 20
 #define SET 27
 #define PULLUP 26
-#define M2A_CTL 15
-#define M2B_CTL 14
+#define M2A_CTL 14
+#define M2B_CTL 15
 
-#define MS_OPEN 24
+#define MS_OPEN 26
 
 bool useSD = false;
 
@@ -101,14 +101,14 @@ void setup() {
     delay(100);
     digitalWrite(SET,LOW);
     /*
-    434.2 MHz (434200)
+    433.2 MHz (433200)
     RF 19200 baud (4)
     20mW output power (9)
     UART 9600 baud (3)
     No parity (0)
     */
     delay(2);
-    Serial.println("WR_434200_4_9_3_0");
+    Serial.println("WR_433200_4_9_3_0");
     delay(200);
     digitalWrite(SET,HIGH);
     delay(200);
@@ -146,7 +146,7 @@ float altitudeStateStore = 0;
 long timeStateStore = 0;
 char ch1 = 0, ch2 = 0, ch3 = 0;
 void loop() {
-    if((millis() - t) > 300) {
+    if((millis() - t) > 600) {
       digitalWrite(28,HIGH);
       D1 = getVal(ADDRESS, 0x48); // Pressure raw
       D2 = getVal(ADDRESS, 0x58);// Temperature raw

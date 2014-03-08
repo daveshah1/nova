@@ -94,13 +94,13 @@ void setup() {
   digitalWrite(SET,LOW);
   delay(1);
   /*
-  434.2 MHz (434200)
+  433.2 MHz (433200)
   RF 19200 baud (4)
   20mW output power (9)
   UART 9600 baud (3)
   No parity (0)
   */
-  Serial1.print("WR_434200_4_9_3_0");
+  Serial1.print("WR_433200_4_9_3_0");
   Serial1.write(0x0D);
   Serial1.write(0X0A);
   delay(200);

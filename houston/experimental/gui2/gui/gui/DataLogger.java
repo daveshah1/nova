@@ -13,8 +13,8 @@ import java.util.Date;
 import gui.LandingModule.DeploymentStatus;
 
 public class DataLogger implements RoverUpdateListener, LandingModuleListener {
-	Position currentRoverPosition, currentLandingModulePosition;
-	TPData currentRoverTP, currentLandingModuleTP;
+	Position currentRoverPosition = new Position(0,0), currentLandingModulePosition = new Position(0,0);
+	TPData currentRoverTP = new TPData(0,0), currentLandingModuleTP = new TPData(0,0);
 	String filename;
 	boolean logging = false;
 	public DataLogger() {
@@ -106,12 +106,13 @@ public class DataLogger implements RoverUpdateListener, LandingModuleListener {
 	public void positionUpdated(Position newPosition, Position targetPosition,
 			boolean atTargetPosition, Rover r) {
 		currentRoverPosition = newPosition;
-		
+		addDataLine();
 	}
 
 	@Override
 	public void dataUpdated(TPData data, Rover r) {
 		currentRoverTP = data;		
+		addDataLine();
 	}
 
 	@Override

@@ -295,7 +295,7 @@ public class Main {
 			public void actionPerformed(ActionEvent arg0) {
 				m = new LargeMap(rover,module,new Position(map_2.getPosition()),map_2.getZoom());
 			}
-			
+			 
 		});
 		panel_4.add(btnConvertIntoDem);
 		
